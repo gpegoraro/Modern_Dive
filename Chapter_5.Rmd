@@ -1,0 +1,19 @@
+---
+title: "Chapter_5"
+output: github_document
+---
+
+Code for the Chapter 5 of the [Modern Dive book](https://moderndive.com/5-regression.html#regression).
+
+```{r load-packages}
+library(tidyverse)
+library(moderndive)
+library(skimr)
+library(gapminder)
+```
+
+Document the information about the analysis session
+
+```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}
+sessionInfo()
+```
