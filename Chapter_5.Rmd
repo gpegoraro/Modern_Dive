@@ -11,6 +11,33 @@ library(moderndive)
 library(skimr)
 library(gapminder)
 ```
+```{r}
+glimpse(evals)
+```
+```{r}
+evals_ch5 <- evals %>%
+  select(ID, score:bty_avg)
+
+glimpse(evals_ch5)
+```
+
+```{r}
+set.seed(42)
+
+evals_ch5 %>%
+  sample_n(size = 5)
+```
+```{r}
+evals_ch5 %>%
+  summarise(across(c(bty_avg, score),
+                   list(mean = mean, median = median)))
+```
+```{r}
+evals_ch5 %>%
+  select(bty_avg, score) %>%
+  skim()
+```
+
 
 Document the information about the analysis session
 
