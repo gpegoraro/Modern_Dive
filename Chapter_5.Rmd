@@ -10,6 +10,7 @@ library(tidyverse)
 library(moderndive)
 library(skimr)
 library(gapminder)
+library(ggthemes)
 ```
 Set the palette and the running theme for ggplot2.
 ```{r set-theme-palette}
@@ -228,6 +229,52 @@ gapminder2007 %>%
   labs(x = "Continent",
        y = "2007 GDP per Capita in USD",
        title = "Boxplot of per continent 2007 GDP")
+```
+
+### 5.2.2
+```{r}
+lifeExp_model <- lm(lifeExp ~ continent, data = gapminder2007)
+get_regression_table(lifeExp_model)
+```
+
+###LC5.5
+```{r}
+gdp_model <- lm(gdpPercap ~ continent, data = gapminder2007)
+get_regression_table(gdp_model)
+```
+### 5.2.3
+```{r}
+regression_points_3 <- get_regression_points(lifeExp_model, ID = "country")
+regression_points_3
+```
+```{r}
+gapminder %>% skim()
+```
+```{r}
+gapminder %>%
+  ggplot(aes(x = factor(year), 
+             y = lifeExp,
+             color = continent)) +
+  geom_boxplot(position = position_dodge(width = 1)) +
+  scale_color_tableau(name = "Continent") +
+  labs(x = "Year",
+       y = "Life Expectancy",
+       title = "Boxplot of Life Expectancy 1952-2007")
+```
+### LC5.6
+
+```{r}
+regression_points_3 %>%
+  arrange(residual) %>%
+  head(5)
+```
+
+### LC5.7
+
+```{r}
+regression_points_3 %>%
+  arrange(desc(residual)) %>%
+  head(5)
 ```
 
 Document the information about the analysis session

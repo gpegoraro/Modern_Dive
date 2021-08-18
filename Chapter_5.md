@@ -23,6 +23,7 @@ library(tidyverse)
 library(moderndive)
 library(skimr)
 library(gapminder)
+library(ggthemes)
 ```
 
 Set the palette and the running theme for ggplot2.
@@ -472,6 +473,141 @@ gapminder2007 %>%
 
 ![](Chapter_5_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
+### 5.2.2
+
+``` r
+lifeExp_model <- lm(lifeExp ~ continent, data = gapminder2007)
+get_regression_table(lifeExp_model)
+```
+
+    ## # A tibble: 5 × 7
+    ##   term                estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>                  <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept               54.8      1.02     53.4        0     52.8     56.8
+    ## 2 continent: Americas     18.8      1.8      10.4        0     15.2     22.4
+    ## 3 continent: Asia         15.9      1.65      9.68       0     12.7     19.2
+    ## 4 continent: Europe       22.8      1.70     13.5        0     19.5     26.2
+    ## 5 continent: Oceania      25.9      5.33      4.86       0     15.4     36.4
+
+\#\#\#LC5.5
+
+``` r
+gdp_model <- lm(gdpPercap ~ continent, data = gapminder2007)
+get_regression_table(gdp_model)
+```
+
+    ## # A tibble: 5 × 7
+    ##   term                estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>                  <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept              3089.     1373.      2.25   0.026     375.    5804.
+    ## 2 continent: Americas    7914.     2409.      3.28   0.001    3150.   12678.
+    ## 3 continent: Asia        9384.     2203.      4.26   0        5027.   13741.
+    ## 4 continent: Europe     21965.     2270.      9.68   0       17478.   26453.
+    ## 5 continent: Oceania    26721.     7133.      3.75   0       12616.   40826.
+
+### 5.2.3
+
+``` r
+regression_points_3 <- get_regression_points(lifeExp_model, ID = "country")
+regression_points_3
+```
+
+    ## # A tibble: 142 × 5
+    ##    country     lifeExp continent lifeExp_hat residual
+    ##    <fct>         <dbl> <fct>           <dbl>    <dbl>
+    ##  1 Afghanistan    43.8 Asia             70.7  -26.9  
+    ##  2 Albania        76.4 Europe           77.6   -1.23 
+    ##  3 Algeria        72.3 Africa           54.8   17.5  
+    ##  4 Angola         42.7 Africa           54.8  -12.1  
+    ##  5 Argentina      75.3 Americas         73.6    1.71 
+    ##  6 Australia      81.2 Oceania          80.7    0.516
+    ##  7 Austria        79.8 Europe           77.6    2.18 
+    ##  8 Bahrain        75.6 Asia             70.7    4.91 
+    ##  9 Bangladesh     64.1 Asia             70.7   -6.67 
+    ## 10 Belgium        79.4 Europe           77.6    1.79 
+    ## # … with 132 more rows
+
+``` r
+gapminder %>% skim()
+```
+
+|                                                  |            |
+|:-------------------------------------------------|:-----------|
+| Name                                             | Piped data |
+| Number of rows                                   | 1704       |
+| Number of columns                                | 6          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |            |
+| Column type frequency:                           |            |
+| factor                                           | 2          |
+| numeric                                          | 4          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |            |
+| Group variables                                  | None       |
+
+Data summary
+
+**Variable type: factor**
+
+| skim\_variable | n\_missing | complete\_rate | ordered | n\_unique | top\_counts                            |
+|:---------------|-----------:|---------------:|:--------|----------:|:---------------------------------------|
+| country        |          0 |              1 | FALSE   |       142 | Afg: 12, Alb: 12, Alg: 12, Ang: 12     |
+| continent      |          0 |              1 | FALSE   |         5 | Afr: 624, Asi: 396, Eur: 360, Ame: 300 |
+
+**Variable type: numeric**
+
+| skim\_variable | n\_missing | complete\_rate |        mean |            sd |       p0 |        p25 |        p50 |         p75 |         p100 | hist  |
+|:---------------|-----------:|---------------:|------------:|--------------:|---------:|-----------:|-----------:|------------:|-------------:|:------|
+| year           |          0 |              1 |     1979.50 |         17.27 |  1952.00 |    1965.75 |    1979.50 |     1993.25 |       2007.0 | ▇▅▅▅▇ |
+| lifeExp        |          0 |              1 |       59.47 |         12.92 |    23.60 |      48.20 |      60.71 |       70.85 |         82.6 | ▁▆▇▇▇ |
+| pop            |          0 |              1 | 29601212.32 | 106157896\.74 | 60011.00 | 2793664.00 | 7023595.50 | 19585221.75 | 1318683096.0 | ▇▁▁▁▁ |
+| gdpPercap      |          0 |              1 |     7215.33 |       9857.45 |   241.17 |    1202.06 |    3531.85 |     9325.46 |     113523.1 | ▇▁▁▁▁ |
+
+``` r
+gapminder %>%
+  ggplot(aes(x = factor(year), 
+             y = lifeExp,
+             color = continent)) +
+  geom_boxplot(position = position_dodge(width = 1)) +
+  scale_color_tableau(name = "Continent") +
+  labs(x = "Year",
+       y = "Life Expectancy",
+       title = "Boxplot of Life Expectancy 1952-2007")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-32-1.png)<!-- --> \#\#\#
+LC5.6
+
+``` r
+regression_points_3 %>%
+  arrange(residual) %>%
+  head(5)
+```
+
+    ## # A tibble: 5 × 5
+    ##   country     lifeExp continent lifeExp_hat residual
+    ##   <fct>         <dbl> <fct>           <dbl>    <dbl>
+    ## 1 Afghanistan    43.8 Asia             70.7    -26.9
+    ## 2 Swaziland      39.6 Africa           54.8    -15.2
+    ## 3 Mozambique     42.1 Africa           54.8    -12.7
+    ## 4 Haiti          60.9 Americas         73.6    -12.7
+    ## 5 Zambia         42.4 Africa           54.8    -12.4
+
+### LC5.7
+
+``` r
+regression_points_3 %>%
+  arrange(desc(residual)) %>%
+  head(5)
+```
+
+    ## # A tibble: 5 × 5
+    ##   country   lifeExp continent lifeExp_hat residual
+    ##   <fct>       <dbl> <fct>           <dbl>    <dbl>
+    ## 1 Reunion      76.4 Africa           54.8     21.6
+    ## 2 Libya        74.0 Africa           54.8     19.1
+    ## 3 Tunisia      73.9 Africa           54.8     19.1
+    ## 4 Mauritius    72.8 Africa           54.8     18.0
+    ## 5 Algeria      72.3 Africa           54.8     17.5
+
 Document the information about the analysis session
 
 ``` r
@@ -493,9 +629,10 @@ sessionInfo()
     ## [1] stats     graphics  grDevices datasets  utils     methods   base     
     ## 
     ## other attached packages:
-    ##  [1] gapminder_0.3.0  skimr_2.1.3      moderndive_0.5.2 forcats_0.5.1   
-    ##  [5] stringr_1.4.0    dplyr_1.0.7      purrr_0.3.4      readr_2.0.1     
-    ##  [9] tidyr_1.1.3      tibble_3.1.3     ggplot2_3.3.5    tidyverse_1.3.1 
+    ##  [1] ggthemes_4.2.4   gapminder_0.3.0  skimr_2.1.3      moderndive_0.5.2
+    ##  [5] forcats_0.5.1    stringr_1.4.0    dplyr_1.0.7      purrr_0.3.4     
+    ##  [9] readr_2.0.1      tidyr_1.1.3      tibble_3.1.3     ggplot2_3.3.5   
+    ## [13] tidyverse_1.3.1 
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] httr_1.4.2           jsonlite_1.7.2       splines_4.1.1       
@@ -503,8 +640,8 @@ sessionInfo()
     ##  [7] renv_0.14.0          cellranger_1.1.0     yaml_2.2.1          
     ## [10] pillar_1.6.2         backports_1.2.1      lattice_0.20-44     
     ## [13] glue_1.4.2           digest_0.6.27        rvest_1.0.1         
-    ## [16] snakecase_0.11.0     colorspace_2.0-2     htmltools_0.5.1.1   
-    ## [19] Matrix_1.3-4         infer_1.0.0          pkgconfig_2.0.3     
+    ## [16] snakecase_0.11.0     colorspace_2.0-2     Matrix_1.3-4        
+    ## [19] htmltools_0.5.1.1    infer_1.0.0          pkgconfig_2.0.3     
     ## [22] broom_0.7.9          haven_2.4.3          scales_1.1.1        
     ## [25] tzdb_0.1.2           mgcv_1.8-36          generics_0.1.0      
     ## [28] farver_2.1.0         ellipsis_0.3.2       withr_2.4.2         
