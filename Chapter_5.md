@@ -25,6 +25,8 @@ library(skimr)
 library(gapminder)
 ```
 
+## 5.1
+
 ``` r
 glimpse(evals)
 ```
@@ -45,6 +47,8 @@ glimpse(evals)
     ## $ cls_did_eval <int> 24, 86, 76, 77, 17, 35, 39, 55, 111, 40, 24, 24, 17, 14, …
     ## $ cls_students <int> 43, 125, 125, 123, 20, 40, 44, 55, 195, 46, 27, 25, 20, 2…
     ## $ cls_level    <fct> upper, upper, upper, upper, upper, upper, upper, upper, u…
+
+### 5.1
 
 ``` r
 evals_ch5 <- evals %>%
@@ -145,6 +149,157 @@ evals_ch5 %>%
 
 ![](Chapter_5_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
+``` r
+evals_ch5 %>%
+  ggplot(aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = "Average Beauty",
+       y = "Course Score",
+       title = "Relationship between beauty and score") +
+  geom_smooth(method = "lm",
+              se = FALSE)
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+### LC5.1
+
+``` r
+evals_ch5 %>%
+  select(score, age) %>%
+  skim()
+```
+
+|                                                  |            |
+|:-------------------------------------------------|:-----------|
+| Name                                             | Piped data |
+| Number of rows                                   | 463        |
+| Number of columns                                | 2          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |            |
+| Column type frequency:                           |            |
+| numeric                                          | 2          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |            |
+| Group variables                                  | None       |
+
+Data summary
+
+**Variable type: numeric**
+
+| skim\_variable | n\_missing | complete\_rate |  mean |   sd |   p0 |  p25 |  p50 |  p75 | p100 | hist  |
+|:---------------|-----------:|---------------:|------:|-----:|-----:|-----:|-----:|-----:|-----:|:------|
+| score          |          0 |              1 |  4.17 | 0.54 |  2.3 |  3.8 |  4.3 |  4.6 |    5 | ▁▁▅▇▇ |
+| age            |          0 |              1 | 48.37 | 9.80 | 29.0 | 42.0 | 48.0 | 57.0 |   73 | ▅▆▇▆▁ |
+
+``` r
+evals_ch5 %>%
+  get_correlation(score ~ age)
+```
+
+    ## # A tibble: 1 × 1
+    ##      cor
+    ##    <dbl>
+    ## 1 -0.107
+
+``` r
+evals_ch5 %>%
+  ggplot(aes(x = age, y = score)) +
+  geom_point() +
+  labs(x = "Age (Years)",
+       y = "Course Score",
+       title = "Relationship between age and score") +
+  geom_smooth(method = "lm",
+              se = FALSE)
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> \#\#\#
+5.1.2
+
+``` r
+score_model_1 <- lm(score ~ bty_avg, data = evals_ch5)
+get_regression_table(score_model_1)
+```
+
+    ## # A tibble: 2 × 7
+    ##   term      estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>        <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept    3.88      0.076     51.0        0    3.73     4.03 
+    ## 2 bty_avg      0.067     0.016      4.09       0    0.035    0.099
+
+### LC5.2
+
+``` r
+score_model_2 <- lm(score ~ age, data = evals_ch5)
+get_regression_table(score_model_2)
+```
+
+    ## # A tibble: 2 × 7
+    ##   term      estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>        <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept    4.46      0.127     35.2    0        4.21     4.71 
+    ## 2 age         -0.006     0.003     -2.31   0.021   -0.011   -0.001
+
+``` r
+score_model_3 <- lm(score ~ bty_avg + age , data = evals_ch5)
+get_regression_table(score_model_3)
+```
+
+    ## # A tibble: 3 × 7
+    ##   term      estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>        <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept    4.06      0.17      23.9    0        3.72     4.39 
+    ## 2 bty_avg      0.061     0.017      3.55   0        0.027    0.094
+    ## 3 age         -0.003     0.003     -1.15   0.251   -0.008    0.002
+
+### 5.1.3
+
+``` r
+regression_points_1 <- get_regression_points(score_model_1)
+
+regression_points_1
+```
+
+    ## # A tibble: 463 × 5
+    ##       ID score bty_avg score_hat residual
+    ##    <int> <dbl>   <dbl>     <dbl>    <dbl>
+    ##  1     1   4.7    5         4.21    0.486
+    ##  2     2   4.1    5         4.21   -0.114
+    ##  3     3   3.9    5         4.21   -0.314
+    ##  4     4   4.8    5         4.21    0.586
+    ##  5     5   4.6    3         4.08    0.52 
+    ##  6     6   4.3    3         4.08    0.22 
+    ##  7     7   2.8    3         4.08   -1.28 
+    ##  8     8   4.1    3.33      4.10   -0.002
+    ##  9     9   3.4    3.33      4.10   -0.702
+    ## 10    10   4.5    3.17      4.09    0.409
+    ## # … with 453 more rows
+
+### LC5.3
+
+``` r
+regression_points_2 <- get_regression_points(score_model_2)
+
+regression_points_2
+```
+
+    ## # A tibble: 463 × 5
+    ##       ID score   age score_hat residual
+    ##    <int> <dbl> <int>     <dbl>    <dbl>
+    ##  1     1   4.7    36      4.25    0.452
+    ##  2     2   4.1    36      4.25   -0.148
+    ##  3     3   3.9    36      4.25   -0.348
+    ##  4     4   4.8    36      4.25    0.552
+    ##  5     5   4.6    59      4.11    0.488
+    ##  6     6   4.3    59      4.11    0.188
+    ##  7     7   2.8    59      4.11   -1.31 
+    ##  8     8   4.1    51      4.16   -0.059
+    ##  9     9   3.4    51      4.16   -0.759
+    ## 10    10   4.5    40      4.22    0.276
+    ## # … with 453 more rows
+
 Document the information about the analysis session
 
 ``` r
@@ -171,24 +326,26 @@ sessionInfo()
     ##  [9] tidyr_1.1.3      tibble_3.1.3     ggplot2_3.3.5    tidyverse_1.3.1 
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_1.0.7           lubridate_1.7.10     formula.tools_1.7.1 
-    ##  [4] assertthat_0.2.1     digest_0.6.27        utf8_1.2.2          
-    ##  [7] repr_1.1.3           R6_2.5.0             cellranger_1.1.0    
-    ## [10] backports_1.2.1      reprex_2.0.1         evaluate_0.14       
-    ## [13] highr_0.9            httr_1.4.2           pillar_1.6.2        
-    ## [16] rlang_0.4.11         readxl_1.3.1         rstudioapi_0.13     
-    ## [19] rmarkdown_2.10       labeling_0.4.2       munsell_0.5.0       
-    ## [22] broom_0.7.9          compiler_4.1.1       modelr_0.1.8        
-    ## [25] janitor_2.1.0        xfun_0.25            base64enc_0.1-3     
-    ## [28] pkgconfig_2.0.3      htmltools_0.5.1.1    tidyselect_1.1.1    
-    ## [31] fansi_0.5.0          crayon_1.4.1         tzdb_0.1.2          
-    ## [34] dbplyr_2.1.1         withr_2.4.2          grid_4.1.1          
-    ## [37] jsonlite_1.7.2       gtable_0.3.0         lifecycle_1.0.0     
-    ## [40] DBI_1.1.1            magrittr_2.0.1       infer_1.0.0         
-    ## [43] scales_1.1.1         cli_3.0.1            stringi_1.7.3       
-    ## [46] farver_2.1.0         renv_0.14.0          fs_1.5.0            
-    ## [49] snakecase_0.11.0     xml2_1.3.2           ellipsis_0.3.2      
-    ## [52] generics_0.1.0       vctrs_0.3.8          tools_4.1.1         
-    ## [55] glue_1.4.2           hms_1.1.0            yaml_2.2.1          
-    ## [58] colorspace_2.0-2     operator.tools_1.6.3 rvest_1.0.1         
-    ## [61] knitr_1.33           haven_2.4.3
+    ##  [1] httr_1.4.2           jsonlite_1.7.2       splines_4.1.1       
+    ##  [4] modelr_0.1.8         assertthat_0.2.1     highr_0.9           
+    ##  [7] renv_0.14.0          cellranger_1.1.0     yaml_2.2.1          
+    ## [10] pillar_1.6.2         backports_1.2.1      lattice_0.20-44     
+    ## [13] glue_1.4.2           digest_0.6.27        rvest_1.0.1         
+    ## [16] snakecase_0.11.0     colorspace_2.0-2     htmltools_0.5.1.1   
+    ## [19] Matrix_1.3-4         infer_1.0.0          pkgconfig_2.0.3     
+    ## [22] broom_0.7.9          haven_2.4.3          scales_1.1.1        
+    ## [25] tzdb_0.1.2           mgcv_1.8-36          generics_0.1.0      
+    ## [28] farver_2.1.0         ellipsis_0.3.2       withr_2.4.2         
+    ## [31] janitor_2.1.0        repr_1.1.3           formula.tools_1.7.1 
+    ## [34] cli_3.0.1            magrittr_2.0.1       crayon_1.4.1        
+    ## [37] readxl_1.3.1         evaluate_0.14        fs_1.5.0            
+    ## [40] fansi_0.5.0          operator.tools_1.6.3 nlme_3.1-152        
+    ## [43] xml2_1.3.2           tools_4.1.1          hms_1.1.0           
+    ## [46] lifecycle_1.0.0      munsell_0.5.0        reprex_2.0.1        
+    ## [49] compiler_4.1.1       rlang_0.4.11         grid_4.1.1          
+    ## [52] rstudioapi_0.13      base64enc_0.1-3      labeling_0.4.2      
+    ## [55] rmarkdown_2.10       gtable_0.3.0         DBI_1.1.1           
+    ## [58] R6_2.5.0             lubridate_1.7.10     knitr_1.33          
+    ## [61] utf8_1.2.2           stringi_1.7.3        Rcpp_1.0.7          
+    ## [64] vctrs_0.3.8          dbplyr_2.1.1         tidyselect_1.1.1    
+    ## [67] xfun_0.25

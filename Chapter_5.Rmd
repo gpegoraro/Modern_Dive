@@ -11,10 +11,12 @@ library(moderndive)
 library(skimr)
 library(gapminder)
 ```
+## 5.1
 
 ```{r}
 glimpse(evals)
 ```
+### 5.1
 
 ```{r}
 evals_ch5 <- evals %>%
@@ -64,6 +66,74 @@ evals_ch5 %>%
        y = "Course Score",
        title = "Relationship between beauty and score with jitter")
 ```
+
+```{r}
+evals_ch5 %>%
+  ggplot(aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = "Average Beauty",
+       y = "Course Score",
+       title = "Relationship between beauty and score") +
+  geom_smooth(method = "lm",
+              se = FALSE)
+```
+
+### LC5.1
+
+```{r}
+evals_ch5 %>%
+  select(score, age) %>%
+  skim()
+```
+
+
+```{r}
+evals_ch5 %>%
+  get_correlation(score ~ age)
+```
+```{r}
+evals_ch5 %>%
+  ggplot(aes(x = age, y = score)) +
+  geom_point() +
+  labs(x = "Age (Years)",
+       y = "Course Score",
+       title = "Relationship between age and score") +
+  geom_smooth(method = "lm",
+              se = FALSE)
+```
+### 5.1.2
+
+```{r}
+score_model_1 <- lm(score ~ bty_avg, data = evals_ch5)
+get_regression_table(score_model_1)
+```
+### LC5.2
+
+```{r}
+score_model_2 <- lm(score ~ age, data = evals_ch5)
+get_regression_table(score_model_2)
+```
+```{r}
+score_model_3 <- lm(score ~ bty_avg + age , data = evals_ch5)
+get_regression_table(score_model_3)
+```
+
+### 5.1.3
+
+```{r}
+regression_points_1 <- get_regression_points(score_model_1)
+
+regression_points_1
+```
+
+### LC5.3
+
+```{r}
+regression_points_2 <- get_regression_points(score_model_2)
+
+regression_points_2
+```
+
 
 Document the information about the analysis session
 
