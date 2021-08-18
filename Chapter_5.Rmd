@@ -12,7 +12,9 @@ library(skimr)
 library(gapminder)
 library(ggthemes)
 ```
+
 Set the palette and the running theme for ggplot2.
+
 ```{r set-theme-palette}
 theme_set(theme_bw())
 theme_update(axis.text.x = element_text(
@@ -27,6 +29,7 @@ vjust = 0.5
 ```{r}
 glimpse(evals)
 ```
+
 ### 5.1
 
 ```{r}
@@ -97,11 +100,11 @@ evals_ch5 %>%
   skim()
 ```
 
-
 ```{r}
 evals_ch5 %>%
   get_correlation(score ~ age)
 ```
+
 ```{r}
 evals_ch5 %>%
   ggplot(aes(x = age, y = score)) +
@@ -112,18 +115,21 @@ evals_ch5 %>%
   geom_smooth(method = "lm",
               se = FALSE)
 ```
+
 ### 5.1.2
 
 ```{r}
 score_model_1 <- lm(score ~ bty_avg, data = evals_ch5)
 get_regression_table(score_model_1)
 ```
+
 ### LC5.2
 
 ```{r}
 score_model_2 <- lm(score ~ age, data = evals_ch5)
 get_regression_table(score_model_2)
 ```
+
 ```{r}
 score_model_3 <- lm(score ~ bty_avg + age , data = evals_ch5)
 get_regression_table(score_model_3)
@@ -148,6 +154,7 @@ regression_points_2
 ## 5.2
 
 ### 5.2.1
+
 ```{r}
 library(gapminder)
 
@@ -169,6 +176,7 @@ gapminder2007 %>%
   select(lifeExp, continent) %>%
   skim()
 ```
+
 ```{r}
 gapminder2007 %>%
   ggplot(aes(x = lifeExp)) +
@@ -178,6 +186,7 @@ gapminder2007 %>%
        y = "Number of Contries",
        title = "Histogram of worldwide life expectancies")
 ```
+
 ```{r}
 gapminder2007 %>%
   ggplot(aes(x = lifeExp)) +
@@ -188,6 +197,7 @@ gapminder2007 %>%
        y = "Number of Contries",
        title = "Histogram of per continent life expectancies")
 ```
+
 ```{r}
 gapminder2007 %>%
   ggplot(aes(x = continent, y = lifeExp)) +
@@ -196,11 +206,13 @@ gapminder2007 %>%
        y = "Life Expectancy",
        title = "Boxplot of per continent life expectancies")
 ```
+
 ```{r}
 gapminder2007 %>%
   group_by(continent) %>%
   summarize(across(lifeExp, list(mean = mean, median = median)))
 ```
+
 ```{r}
 gapminder2007 %>%
   group_by(continent) %>%
@@ -232,24 +244,30 @@ gapminder2007 %>%
 ```
 
 ### 5.2.2
+
 ```{r}
 lifeExp_model <- lm(lifeExp ~ continent, data = gapminder2007)
 get_regression_table(lifeExp_model)
 ```
 
-###LC5.5
+\#\#\#LC5.5
+
 ```{r}
 gdp_model <- lm(gdpPercap ~ continent, data = gapminder2007)
 get_regression_table(gdp_model)
 ```
+
 ### 5.2.3
+
 ```{r}
 regression_points_3 <- get_regression_points(lifeExp_model, ID = "country")
 regression_points_3
 ```
+
 ```{r}
 gapminder %>% skim()
 ```
+
 ```{r}
 gapminder %>%
   ggplot(aes(x = factor(year), 
@@ -261,6 +279,7 @@ gapminder %>%
        y = "Life Expectancy",
        title = "Boxplot of Life Expectancy 1952-2007")
 ```
+
 ### LC5.6
 
 ```{r}

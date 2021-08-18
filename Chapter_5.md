@@ -227,8 +227,9 @@ evals_ch5 %>%
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](Chapter_5_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> \#\#\#
-5.1.2
+![](Chapter_5_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+### 5.1.2
 
 ``` r
 score_model_1 <- lm(score ~ bty_avg, data = evals_ch5)
@@ -573,8 +574,9 @@ gapminder %>%
        title = "Boxplot of Life Expectancy 1952-2007")
 ```
 
-![](Chapter_5_files/figure-gfm/unnamed-chunk-32-1.png)<!-- --> \#\#\#
-LC5.6
+![](Chapter_5_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+
+### LC5.6
 
 ``` r
 regression_points_3 %>%
