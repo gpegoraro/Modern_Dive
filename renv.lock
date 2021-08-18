@@ -16,6 +16,13 @@
       "Repository": "CRAN",
       "Hash": "030aaec5bc6553f35347cbb1e70b1a17"
     },
+    "ISLR": {
+      "Package": "ISLR",
+      "Version": "1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "88e6031768891b1ce13e041a7aa4e46b"
+    },
     "MASS": {
       "Package": "MASS",
       "Version": "7.3-54",
