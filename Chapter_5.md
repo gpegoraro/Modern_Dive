@@ -113,6 +113,38 @@ Data summary
 | bty\_avg       |          0 |              1 | 4.42 | 1.53 | 1.67 | 3.17 | 4.33 | 5.5 | 8.17 | ▃▇▇▃▂ |
 | score          |          0 |              1 | 4.17 | 0.54 | 2.30 | 3.80 | 4.30 | 4.6 | 5.00 | ▁▁▅▇▇ |
 
+``` r
+evals_ch5 %>%
+  summarise(correlation = cor(bty_avg, score))
+```
+
+    ## # A tibble: 1 × 1
+    ##   correlation
+    ##         <dbl>
+    ## 1       0.187
+
+``` r
+evals_ch5 %>%
+  ggplot(aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = "Average Beauty",
+       y = "Course Score",
+       title = "Relationship between beauty and score")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+``` r
+evals_ch5 %>%
+  ggplot(aes(x = bty_avg, y = score)) +
+  geom_jitter() +
+  labs(x = "Average Beauty",
+       y = "Course Score",
+       title = "Relationship between beauty and score with jitter")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
 Document the information about the analysis session
 
 ``` r
@@ -120,12 +152,12 @@ sessionInfo()
 ```
 
     ## R version 4.1.1 (2021-08-10)
-    ## Platform: x86_64-apple-darwin17.0 (64-bit)
-    ## Running under: macOS Big Sur 10.16
+    ## Platform: aarch64-apple-darwin20 (64-bit)
+    ## Running under: macOS Big Sur 11.5.2
     ## 
     ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.0.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
     ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -145,17 +177,18 @@ sessionInfo()
     ## [10] backports_1.2.1      reprex_2.0.1         evaluate_0.14       
     ## [13] highr_0.9            httr_1.4.2           pillar_1.6.2        
     ## [16] rlang_0.4.11         readxl_1.3.1         rstudioapi_0.13     
-    ## [19] rmarkdown_2.10       munsell_0.5.0        broom_0.7.9         
-    ## [22] compiler_4.1.1       modelr_0.1.8         janitor_2.1.0       
-    ## [25] xfun_0.25            base64enc_0.1-3      pkgconfig_2.0.3     
-    ## [28] htmltools_0.5.1.1    tidyselect_1.1.1     fansi_0.5.0         
-    ## [31] crayon_1.4.1         tzdb_0.1.2           dbplyr_2.1.1        
-    ## [34] withr_2.4.2          grid_4.1.1           jsonlite_1.7.2      
-    ## [37] gtable_0.3.0         lifecycle_1.0.0      DBI_1.1.1           
-    ## [40] magrittr_2.0.1       infer_1.0.0          scales_1.1.1        
-    ## [43] cli_3.0.1            stringi_1.7.3        renv_0.14.0         
-    ## [46] fs_1.5.0             snakecase_0.11.0     xml2_1.3.2          
-    ## [49] ellipsis_0.3.2       generics_0.1.0       vctrs_0.3.8         
-    ## [52] tools_4.1.1          glue_1.4.2           hms_1.1.0           
-    ## [55] yaml_2.2.1           colorspace_2.0-2     operator.tools_1.6.3
-    ## [58] rvest_1.0.1          knitr_1.33           haven_2.4.3
+    ## [19] rmarkdown_2.10       labeling_0.4.2       munsell_0.5.0       
+    ## [22] broom_0.7.9          compiler_4.1.1       modelr_0.1.8        
+    ## [25] janitor_2.1.0        xfun_0.25            base64enc_0.1-3     
+    ## [28] pkgconfig_2.0.3      htmltools_0.5.1.1    tidyselect_1.1.1    
+    ## [31] fansi_0.5.0          crayon_1.4.1         tzdb_0.1.2          
+    ## [34] dbplyr_2.1.1         withr_2.4.2          grid_4.1.1          
+    ## [37] jsonlite_1.7.2       gtable_0.3.0         lifecycle_1.0.0     
+    ## [40] DBI_1.1.1            magrittr_2.0.1       infer_1.0.0         
+    ## [43] scales_1.1.1         cli_3.0.1            stringi_1.7.3       
+    ## [46] farver_2.1.0         renv_0.14.0          fs_1.5.0            
+    ## [49] snakecase_0.11.0     xml2_1.3.2           ellipsis_0.3.2      
+    ## [52] generics_0.1.0       vctrs_0.3.8          tools_4.1.1         
+    ## [55] glue_1.4.2           hms_1.1.0            yaml_2.2.1          
+    ## [58] colorspace_2.0-2     operator.tools_1.6.3 rvest_1.0.1         
+    ## [61] knitr_1.33           haven_2.4.3

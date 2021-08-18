@@ -11,9 +11,11 @@ library(moderndive)
 library(skimr)
 library(gapminder)
 ```
+
 ```{r}
 glimpse(evals)
 ```
+
 ```{r}
 evals_ch5 <- evals %>%
   select(ID, score:bty_avg)
@@ -27,17 +29,41 @@ set.seed(42)
 evals_ch5 %>%
   sample_n(size = 5)
 ```
+
 ```{r}
 evals_ch5 %>%
   summarise(across(c(bty_avg, score),
                    list(mean = mean, median = median)))
 ```
+
 ```{r}
 evals_ch5 %>%
   select(bty_avg, score) %>%
   skim()
 ```
 
+```{r}
+evals_ch5 %>%
+  summarise(correlation = cor(bty_avg, score))
+```
+
+```{r}
+evals_ch5 %>%
+  ggplot(aes(x = bty_avg, y = score)) +
+  geom_point() +
+  labs(x = "Average Beauty",
+       y = "Course Score",
+       title = "Relationship between beauty and score")
+```
+
+```{r}
+evals_ch5 %>%
+  ggplot(aes(x = bty_avg, y = score)) +
+  geom_jitter() +
+  labs(x = "Average Beauty",
+       y = "Course Score",
+       title = "Relationship between beauty and score with jitter")
+```
 
 Document the information about the analysis session
 
