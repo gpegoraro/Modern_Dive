@@ -26,6 +26,43 @@ vjust = 0.5
 
 ## 6.1
 
+```{r}
+evals_ch6 <- evals %>%
+  select(ID, score, age, gender)
+
+glimpse(evals_ch6)
+```
+
+```{r}
+evals_ch6 %>%
+  summarise(across(c(age, score),
+                   list(mean = mean, median = median)))
+```
+```{r}
+evals_ch6 %>%
+  skim()
+```
+```{r}
+evals_ch6 %>%
+  get_correlation(score ~ age)
+```
+```{r}
+evals_ch6 %>%
+  ggplot(aes(x = age, 
+             y = score,
+             color = gender)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_tableau(name = "Gender") +
+  labs(x = "Age",
+       y = "Teaching Score")
+```
+```{r}
+score_model_interaction <- lm(score ~ age * gender, data = evals_ch6)
+
+get_regression_table(score_model_interaction)
+```
+
 Document the information about the analysis session
 
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}
