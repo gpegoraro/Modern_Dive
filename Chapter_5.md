@@ -25,6 +25,17 @@ library(skimr)
 library(gapminder)
 ```
 
+Set the palette and the running theme for ggplot2.
+
+``` r
+theme_set(theme_bw())
+theme_update(axis.text.x = element_text(
+angle = -45,
+hjust = 0,
+vjust = 0.5
+))
+```
+
 ## 5.1
 
 ``` r
@@ -300,6 +311,167 @@ regression_points_2
     ## 10    10   4.5    40      4.22    0.276
     ## # … with 453 more rows
 
+## 5.2
+
+### 5.2.1
+
+``` r
+library(gapminder)
+
+gapminder2007 <- gapminder %>%
+  filter(year == 2007) %>%
+  select(country, lifeExp, continent, gdpPercap)
+
+glimpse(gapminder2007)
+```
+
+    ## Rows: 142
+    ## Columns: 4
+    ## $ country   <fct> "Afghanistan", "Albania", "Algeria", "Angola", "Argentina", …
+    ## $ lifeExp   <dbl> 43.828, 76.423, 72.301, 42.731, 75.320, 81.235, 79.829, 75.6…
+    ## $ continent <fct> Asia, Europe, Africa, Africa, Americas, Oceania, Europe, Asi…
+    ## $ gdpPercap <dbl> 974.5803, 5937.0295, 6223.3675, 4797.2313, 12779.3796, 34435…
+
+``` r
+set.seed(2701)
+
+gapminder2007 %>% sample_n(size = 5)
+```
+
+    ## # A tibble: 5 × 4
+    ##   country   lifeExp continent gdpPercap
+    ##   <fct>       <dbl> <fct>         <dbl>
+    ## 1 Oman         75.6 Asia         22316.
+    ## 2 Cuba         78.3 Americas      8948.
+    ## 3 Serbia       74.0 Europe        9787.
+    ## 4 Indonesia    70.6 Asia          3541.
+    ## 5 Ghana        60.0 Africa        1328.
+
+``` r
+gapminder2007 %>%
+  select(lifeExp, continent) %>%
+  skim()
+```
+
+|                                                  |            |
+|:-------------------------------------------------|:-----------|
+| Name                                             | Piped data |
+| Number of rows                                   | 142        |
+| Number of columns                                | 2          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |            |
+| Column type frequency:                           |            |
+| factor                                           | 1          |
+| numeric                                          | 1          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |            |
+| Group variables                                  | None       |
+
+Data summary
+
+**Variable type: factor**
+
+| skim\_variable | n\_missing | complete\_rate | ordered | n\_unique | top\_counts                        |
+|:---------------|-----------:|---------------:|:--------|----------:|:-----------------------------------|
+| continent      |          0 |              1 | FALSE   |         5 | Afr: 52, Asi: 33, Eur: 30, Ame: 25 |
+
+**Variable type: numeric**
+
+| skim\_variable | n\_missing | complete\_rate |  mean |    sd |    p0 |   p25 |   p50 |   p75 | p100 | hist  |
+|:---------------|-----------:|---------------:|------:|------:|------:|------:|------:|------:|-----:|:------|
+| lifeExp        |          0 |              1 | 67.01 | 12.07 | 39.61 | 57.16 | 71.94 | 76.41 | 82.6 | ▂▃▃▆▇ |
+
+``` r
+gapminder2007 %>%
+  ggplot(aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, 
+                 color = "white") +
+  labs(x = "Life Expectancy",
+       y = "Number of Contries",
+       title = "Histogram of worldwide life expectancies")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+gapminder2007 %>%
+  ggplot(aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, 
+                 color = "white") +
+  facet_wrap(vars(continent), nrow = 2) +
+  labs(x = "Life Expectancy",
+       y = "Number of Contries",
+       title = "Histogram of per continent life expectancies")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+gapminder2007 %>%
+  ggplot(aes(x = continent, y = lifeExp)) +
+  geom_boxplot() +
+  labs(x = "Continent",
+       y = "Life Expectancy",
+       title = "Boxplot of per continent life expectancies")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
+gapminder2007 %>%
+  group_by(continent) %>%
+  summarize(across(lifeExp, list(mean = mean, median = median)))
+```
+
+    ## # A tibble: 5 × 3
+    ##   continent lifeExp_mean lifeExp_median
+    ##   <fct>            <dbl>          <dbl>
+    ## 1 Africa            54.8           52.9
+    ## 2 Americas          73.6           72.9
+    ## 3 Asia              70.7           72.4
+    ## 4 Europe            77.6           78.6
+    ## 5 Oceania           80.7           80.7
+
+``` r
+gapminder2007 %>%
+  group_by(continent) %>%
+  summarise(mean = mean(lifeExp)) %>%
+  mutate(africa_diff = mean - 54.8)
+```
+
+    ## # A tibble: 5 × 3
+    ##   continent  mean africa_diff
+    ##   <fct>     <dbl>       <dbl>
+    ## 1 Africa     54.8     0.00604
+    ## 2 Americas   73.6    18.8    
+    ## 3 Asia       70.7    15.9    
+    ## 4 Europe     77.6    22.8    
+    ## 5 Oceania    80.7    25.9
+
+### LC5.4
+
+``` r
+gapminder2007 %>%
+  ggplot(aes(x = gdpPercap)) +
+  geom_histogram(binwidth = 2500,
+                 color = "white") +
+  facet_wrap(vars(continent), nrow = 2) +
+  labs(x = "2007 GDP per Capita in USD",
+       y = "Number of Contries",
+       title = "Histogram of per continent 2007 GDP")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+``` r
+gapminder2007 %>%
+  ggplot(aes(x = continent, y = gdpPercap)) +
+  geom_boxplot() +
+  labs(x = "Continent",
+       y = "2007 GDP per Capita in USD",
+       title = "Boxplot of per continent 2007 GDP")
+```
+
+![](Chapter_5_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
 Document the information about the analysis session
 
 ``` r
@@ -307,12 +479,12 @@ sessionInfo()
 ```
 
     ## R version 4.1.1 (2021-08-10)
-    ## Platform: aarch64-apple-darwin20 (64-bit)
-    ## Running under: macOS Big Sur 11.5.2
+    ## Platform: x86_64-apple-darwin17.0 (64-bit)
+    ## Running under: macOS Big Sur 10.16
     ## 
     ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/libRblas.0.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/libRlapack.dylib
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
     ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
