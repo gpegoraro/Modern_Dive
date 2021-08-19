@@ -63,6 +63,125 @@ score_model_interaction <- lm(score ~ age * gender, data = evals_ch6)
 get_regression_table(score_model_interaction)
 ```
 
+### 6.1.3
+```{r}
+evals_ch6 %>%
+  ggplot(aes(x = age, 
+             y = score,
+             color = gender)) +
+  geom_point() +
+  geom_parallel_slopes(se = FALSE) +
+  scale_color_tableau(name = "Gender") +
+  labs(x = "Age",
+       y = "Teaching Score")
+```
+```{r}
+score_model_parallel_slopes <- lm(score ~ age + gender, data = evals_ch6)
+get_regression_table(score_model_parallel_slopes)
+```
+```{r}
+regression_points_interaction <- get_regression_points(score_model_interaction)
+regression_points_interaction
+```
+### LC6.1
+```{r}
+regression_points_parallel <- get_regression_points(score_model_parallel_slopes)
+regression_points_parallel
+```
+### 6.2
+```{r}
+library(ISLR)
+
+credit_ch6 <- Credit %>% 
+  as_tibble() %>%
+  select(ID, 
+         debt = Balance,
+         credit_limit = Limit,
+         income = Income,
+         credit_rating = Rating,
+         age = Age)
+
+glimpse(credit_ch6)
+```
+```{r}
+credit_ch6 %>%
+  select(debt, credit_limit, income) %>%
+  skim()
+```
+```{r}
+credit_ch6 %>%
+  select(debt, credit_limit, income) %>%
+  cor()
+```
+```{r}
+credit_ch6 %>%
+  ggplot(aes(x = credit_limit,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Credit Limit ($1000)",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Credit Limit")
+
+credit_ch6 %>%
+  ggplot(aes(x = income,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Income ($1000)",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Income")
+```
+### LC6.2
+```{r}
+credit_ch6 %>%
+  select(debt, age, credit_rating) %>%
+  skim()
+```
+```{r}
+credit_ch6 %>%
+  select(debt, credit_rating, age) %>%
+  cor()
+```
+
+```{r}
+credit_ch6 %>%
+  ggplot(aes(x = credit_rating,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Credit Rating",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Credit Rating")
+
+credit_ch6 %>%
+  ggplot(aes(x = age,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Age",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Age")
+```
+
+### 6.2.2
+
+```{r}
+debt_model <- lm(debt ~ credit_limit + income, data = credit_ch6)
+get_regression_table(debt_model)
+```
+
+### LC6.3
+```{r}
+debt_model_lc63 <- lm(debt ~ credit_rating + age, data = credit_ch6)
+get_regression_table(debt_model_lc63)
+```
+### 6.2.3
+
 Document the information about the analysis session
 
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}

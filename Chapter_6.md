@@ -137,6 +137,273 @@ get_regression_table(score_model_interaction)
     ## 3 gender: male     -0.446     0.265     -1.68   0.094   -0.968    0.076
     ## 4 age:gendermale    0.014     0.006      2.45   0.015    0.003    0.024
 
+### 6.1.3
+
+``` r
+evals_ch6 %>%
+  ggplot(aes(x = age, 
+             y = score,
+             color = gender)) +
+  geom_point() +
+  geom_parallel_slopes(se = FALSE) +
+  scale_color_tableau(name = "Gender") +
+  labs(x = "Age",
+       y = "Teaching Score")
+```
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+``` r
+score_model_parallel_slopes <- lm(score ~ age + gender, data = evals_ch6)
+get_regression_table(score_model_parallel_slopes)
+```
+
+    ## # A tibble: 3 × 7
+    ##   term         estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>           <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept       4.48      0.125     35.8    0        4.24     4.73 
+    ## 2 age            -0.009     0.003     -3.28   0.001   -0.014   -0.003
+    ## 3 gender: male    0.191     0.052      3.63   0        0.087    0.294
+
+``` r
+regression_points_interaction <- get_regression_points(score_model_interaction)
+regression_points_interaction
+```
+
+    ## # A tibble: 463 × 6
+    ##       ID score   age gender score_hat residual
+    ##    <int> <dbl> <int> <fct>      <dbl>    <dbl>
+    ##  1     1   4.7    36 female      4.25    0.448
+    ##  2     2   4.1    36 female      4.25   -0.152
+    ##  3     3   3.9    36 female      4.25   -0.352
+    ##  4     4   4.8    36 female      4.25    0.548
+    ##  5     5   4.6    59 male        4.20    0.399
+    ##  6     6   4.3    59 male        4.20    0.099
+    ##  7     7   2.8    59 male        4.20   -1.40 
+    ##  8     8   4.1    51 male        4.23   -0.133
+    ##  9     9   3.4    51 male        4.23   -0.833
+    ## 10    10   4.5    40 female      4.18    0.318
+    ## # … with 453 more rows
+
+### LC6.1
+
+``` r
+regression_points_parallel <- get_regression_points(score_model_parallel_slopes)
+regression_points_parallel
+```
+
+    ## # A tibble: 463 × 6
+    ##       ID score   age gender score_hat residual
+    ##    <int> <dbl> <int> <fct>      <dbl>    <dbl>
+    ##  1     1   4.7    36 female      4.17    0.528
+    ##  2     2   4.1    36 female      4.17   -0.072
+    ##  3     3   3.9    36 female      4.17   -0.272
+    ##  4     4   4.8    36 female      4.17    0.628
+    ##  5     5   4.6    59 male        4.16    0.437
+    ##  6     6   4.3    59 male        4.16    0.137
+    ##  7     7   2.8    59 male        4.16   -1.36 
+    ##  8     8   4.1    51 male        4.23   -0.132
+    ##  9     9   3.4    51 male        4.23   -0.832
+    ## 10    10   4.5    40 female      4.14    0.363
+    ## # … with 453 more rows
+
+### 6.2
+
+``` r
+library(ISLR)
+
+credit_ch6 <- Credit %>% 
+  as_tibble() %>%
+  select(ID, 
+         debt = Balance,
+         credit_limit = Limit,
+         income = Income,
+         credit_rating = Rating,
+         age = Age)
+
+glimpse(credit_ch6)
+```
+
+    ## Rows: 400
+    ## Columns: 6
+    ## $ ID            <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1…
+    ## $ debt          <int> 333, 903, 580, 964, 331, 1151, 203, 872, 279, 1350, 1407…
+    ## $ credit_limit  <int> 3606, 6645, 7075, 9504, 4897, 8047, 3388, 7114, 3300, 68…
+    ## $ income        <dbl> 14.891, 106.025, 104.593, 148.924, 55.882, 80.180, 20.99…
+    ## $ credit_rating <int> 283, 483, 514, 681, 357, 569, 259, 512, 266, 491, 589, 1…
+    ## $ age           <int> 34, 82, 71, 36, 68, 77, 37, 87, 66, 41, 30, 64, 57, 49, …
+
+``` r
+credit_ch6 %>%
+  select(debt, credit_limit, income) %>%
+  skim()
+```
+
+|                                                  |            |
+|:-------------------------------------------------|:-----------|
+| Name                                             | Piped data |
+| Number of rows                                   | 400        |
+| Number of columns                                | 3          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |            |
+| Column type frequency:                           |            |
+| numeric                                          | 3          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |            |
+| Group variables                                  | None       |
+
+Data summary
+
+**Variable type: numeric**
+
+| skim\_variable | n\_missing | complete\_rate |    mean |      sd |     p0 |     p25 |     p50 |     p75 |     p100 | hist  |
+|:---------------|-----------:|---------------:|--------:|--------:|-------:|--------:|--------:|--------:|---------:|:------|
+| debt           |          0 |              1 |  520.02 |  459.76 |   0.00 |   68.75 |  459.50 |  863.00 |  1999.00 | ▇▅▃▂▁ |
+| credit\_limit  |          0 |              1 | 4735.60 | 2308.20 | 855.00 | 3088.00 | 4622.50 | 5872.75 | 13913.00 | ▆▇▃▁▁ |
+| income         |          0 |              1 |   45.22 |   35.24 |  10.35 |   21.01 |   33.12 |   57.47 |   186.63 | ▇▂▁▁▁ |
+
+``` r
+credit_ch6 %>%
+  select(debt, credit_limit, income) %>%
+  cor()
+```
+
+    ##                   debt credit_limit    income
+    ## debt         1.0000000    0.8616973 0.4636565
+    ## credit_limit 0.8616973    1.0000000 0.7920883
+    ## income       0.4636565    0.7920883 1.0000000
+
+``` r
+credit_ch6 %>%
+  ggplot(aes(x = credit_limit,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Credit Limit ($1000)",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Credit Limit")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+credit_ch6 %>%
+  ggplot(aes(x = income,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Income ($1000)",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Income")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-14-2.png)<!-- --> \#\#\#
+LC6.2
+
+``` r
+credit_ch6 %>%
+  select(debt, age, credit_rating) %>%
+  skim()
+```
+
+|                                                  |            |
+|:-------------------------------------------------|:-----------|
+| Name                                             | Piped data |
+| Number of rows                                   | 400        |
+| Number of columns                                | 3          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |            |
+| Column type frequency:                           |            |
+| numeric                                          | 3          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |            |
+| Group variables                                  | None       |
+
+Data summary
+
+**Variable type: numeric**
+
+| skim\_variable | n\_missing | complete\_rate |   mean |     sd |  p0 |    p25 |   p50 |    p75 | p100 | hist  |
+|:---------------|-----------:|---------------:|-------:|-------:|----:|-------:|------:|-------:|-----:|:------|
+| debt           |          0 |              1 | 520.02 | 459.76 |   0 |  68.75 | 459.5 | 863.00 | 1999 | ▇▅▃▂▁ |
+| age            |          0 |              1 |  55.67 |  17.25 |  23 |  41.75 |  56.0 |  70.00 |   98 | ▆▇▇▇▁ |
+| credit\_rating |          0 |              1 | 354.94 | 154.72 |  93 | 247.25 | 344.0 | 437.25 |  982 | ▆▇▃▁▁ |
+
+``` r
+credit_ch6 %>%
+  select(debt, credit_rating, age) %>%
+  cor()
+```
+
+    ##                      debt credit_rating         age
+    ## debt          1.000000000     0.8636252 0.001835119
+    ## credit_rating 0.863625161     1.0000000 0.103164996
+    ## age           0.001835119     0.1031650 1.000000000
+
+``` r
+credit_ch6 %>%
+  ggplot(aes(x = credit_rating,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Credit Rating",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Credit Rating")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+``` r
+credit_ch6 %>%
+  ggplot(aes(x = age,
+             y = debt)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  labs(x = "Age",
+       y = "Credit Card Debt ($1000)",
+       title = "Debt and Age")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
+
+### 6.2.2
+
+``` r
+debt_model <- lm(debt ~ credit_limit + income, data = credit_ch6)
+get_regression_table(debt_model)
+```
+
+    ## # A tibble: 3 × 7
+    ##   term         estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>           <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept    -385.       19.5       -19.8       0 -423.    -347.   
+    ## 2 credit_limit    0.264     0.006      45.0       0    0.253    0.276
+    ## 3 income         -7.66      0.385     -19.9       0   -8.42    -6.91
+
+### LC6.3
+
+``` r
+debt_model_lc63 <- lm(debt ~ credit_rating + age, data = credit_ch6)
+get_regression_table(debt_model_lc63)
+```
+
+    ## # A tibble: 3 × 7
+    ##   term          estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>            <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept      -270.      44.8       -6.02       0  -358.    -181.  
+    ## 2 credit_rating     2.59     0.074     34.8        0     2.45     2.74
+    ## 3 age              -2.35     0.668     -3.52       0    -3.66    -1.04
+
+### 6.2.3
+
 Document the information about the analysis session
 
 ``` r
