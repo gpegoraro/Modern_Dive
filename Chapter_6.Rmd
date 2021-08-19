@@ -182,6 +182,72 @@ get_regression_table(debt_model_lc63)
 ```
 ### 6.2.3
 
+```{r}
+get_regression_points(debt_model)
+```
+## 6.3
+### 6.3.1
+
+```{r}
+glimpse(MA_schools)
+```
+```{r}
+MA_schools %>%
+  select(-school_name) %>%
+  skim()
+```
+```{r}
+ggplot(MA_schools,
+       aes(x = perc_disadvan,
+           y = average_sat_math,
+           color = size)) +
+  geom_point(alpha = 0.25) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_tableau() +
+  labs(x = "Percentage Economically Disadvantaged",
+       y = "Average SAT in Mathematics",
+       color = "School Size")
+```
+```{r}
+ggplot(MA_schools,
+       aes(x = perc_disadvan,
+           y = average_sat_math,
+           color = size)) +
+  geom_point(alpha = 0.25) +
+  geom_parallel_slopes(se = FALSE) +
+  scale_color_tableau() +
+  labs(x = "Percentage Economically Disadvantaged",
+       y = "Average SAT in Mathematics",
+       color = "School Size")
+```
+
+```{r}
+model_2_interaction <- lm(average_sat_math ~ perc_disadvan * size, 
+                          data = MA_schools)
+
+get_regression_table(model_2_interaction)
+```
+```{r}
+model_2_parallel_slopes <- lm(average_sat_math ~ perc_disadvan + size, 
+                          data = MA_schools)
+
+get_regression_table(model_2_parallel_slopes)
+```
+
+### 6.3.2
+```{r}
+get_regression_points(model_2_interaction)
+```
+```{r}
+get_regression_points(model_2_interaction) %>%
+  summarise(across(c(average_sat_math, average_sat_math_hat, residual),
+            list(var = var)))
+```
+```{r}
+get_regression_summaries(model_2_interaction)
+```
+### 6.3.3
+
 Document the information about the analysis session
 
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}

@@ -404,6 +404,180 @@ get_regression_table(debt_model_lc63)
 
 ### 6.2.3
 
+``` r
+get_regression_points(debt_model)
+```
+
+    ## # A tibble: 400 × 6
+    ##       ID  debt credit_limit income debt_hat residual
+    ##    <int> <int>        <int>  <dbl>    <dbl>    <dbl>
+    ##  1     1   333         3606   14.9     454.   -121. 
+    ##  2     2   903         6645  106.      559.    344. 
+    ##  3     3   580         7075  105.      683.   -103. 
+    ##  4     4   964         9504  149.      986.    -21.7
+    ##  5     5   331         4897   55.9     481.   -150. 
+    ##  6     6  1151         8047   80.2    1127.     23.6
+    ##  7     7   203         3388   21.0     349.   -146. 
+    ##  8     8   872         7114   71.4     948.    -76.0
+    ##  9     9   279         3300   15.1     371.    -92.2
+    ## 10    10  1350         6819   71.1     873.    477. 
+    ## # … with 390 more rows
+
+## 6.3
+
+### 6.3.1
+
+``` r
+glimpse(MA_schools)
+```
+
+    ## Rows: 332
+    ## Columns: 4
+    ## $ school_name      <chr> "Abington High", "Agawam High", "Amesbury High", "And…
+    ## $ average_sat_math <dbl> 516, 514, 534, 581, 592, 576, 504, 505, 481, 513, 572…
+    ## $ perc_disadvan    <dbl> 21.5, 22.7, 14.6, 6.3, 10.3, 10.3, 25.6, 15.2, 23.8, …
+    ## $ size             <fct> medium, large, large, large, large, large, large, lar…
+
+``` r
+MA_schools %>%
+  select(-school_name) %>%
+  skim()
+```
+
+|                                                  |            |
+|:-------------------------------------------------|:-----------|
+| Name                                             | Piped data |
+| Number of rows                                   | 332        |
+| Number of columns                                | 3          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |            |
+| Column type frequency:                           |            |
+| factor                                           | 1          |
+| numeric                                          | 2          |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |            |
+| Group variables                                  | None       |
+
+Data summary
+
+**Variable type: factor**
+
+| skim\_variable | n\_missing | complete\_rate | ordered | n\_unique | top\_counts                |
+|:---------------|-----------:|---------------:|:--------|----------:|:---------------------------|
+| size           |          0 |              1 | FALSE   |         3 | lar: 235, med: 69, sma: 28 |
+
+**Variable type: numeric**
+
+| skim\_variable     | n\_missing | complete\_rate |   mean |    sd |    p0 |    p25 | p50 |   p75 |  p100 | hist  |
+|:-------------------|-----------:|---------------:|-------:|------:|------:|-------:|----:|------:|------:|:------|
+| average\_sat\_math |          0 |              1 | 507.06 | 60.76 | 336.0 | 473.00 | 514 | 540.0 | 741.0 | ▂▃▇▂▁ |
+| perc\_disadvan     |          0 |              1 |  26.70 | 18.24 |   3.1 |  11.78 |  22 |  38.4 |  83.3 | ▇▅▃▂▁ |
+
+``` r
+ggplot(MA_schools,
+       aes(x = perc_disadvan,
+           y = average_sat_math,
+           color = size)) +
+  geom_point(alpha = 0.25) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_tableau() +
+  labs(x = "Percentage Economically Disadvantaged",
+       y = "Average SAT in Mathematics",
+       color = "School Size")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
+ggplot(MA_schools,
+       aes(x = perc_disadvan,
+           y = average_sat_math,
+           color = size)) +
+  geom_point(alpha = 0.25) +
+  geom_parallel_slopes(se = FALSE) +
+  scale_color_tableau() +
+  labs(x = "Percentage Economically Disadvantaged",
+       y = "Average SAT in Mathematics",
+       color = "School Size")
+```
+
+![](Chapter_6_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+``` r
+model_2_interaction <- lm(average_sat_math ~ perc_disadvan * size, 
+                          data = MA_schools)
+
+get_regression_table(model_2_interaction)
+```
+
+    ## # A tibble: 6 × 7
+    ##   term                     estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>                       <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept                 594.       13.3      44.7     0      568.     620.   
+    ## 2 perc_disadvan              -2.93      0.294    -9.96    0       -3.51    -2.35 
+    ## 3 size: medium              -17.8      15.8      -1.12    0.263  -48.9     13.4  
+    ## 4 size: large               -13.3      13.8      -0.962   0.337  -40.5     13.9  
+    ## 5 perc_disadvan:sizemedium    0.146     0.371     0.393   0.694   -0.585    0.877
+    ## 6 perc_disadvan:sizelarge     0.189     0.323     0.586   0.559   -0.446    0.824
+
+``` r
+model_2_parallel_slopes <- lm(average_sat_math ~ perc_disadvan + size, 
+                          data = MA_schools)
+
+get_regression_table(model_2_parallel_slopes)
+```
+
+    ## # A tibble: 4 × 7
+    ##   term          estimate std_error statistic p_value lower_ci upper_ci
+    ##   <chr>            <dbl>     <dbl>     <dbl>   <dbl>    <dbl>    <dbl>
+    ## 1 intercept       588.       7.61     77.3     0       573.     603.  
+    ## 2 perc_disadvan    -2.78     0.106   -26.1     0        -2.99    -2.57
+    ## 3 size: medium    -11.9      7.54     -1.58    0.115   -26.7      2.91
+    ## 4 size: large      -6.36     6.92     -0.919   0.359   -20.0      7.26
+
+### 6.3.2
+
+``` r
+get_regression_points(model_2_interaction)
+```
+
+    ## # A tibble: 332 × 6
+    ##       ID average_sat_math perc_disadvan size   average_sat_math_hat residual
+    ##    <int>            <dbl>         <dbl> <fct>                 <dbl>    <dbl>
+    ##  1     1              516          21.5 medium                 517.    -0.67
+    ##  2     2              514          22.7 large                  519.    -4.77
+    ##  3     3              534          14.6 large                  541.    -6.99
+    ##  4     4              581           6.3 large                  564.    17.2 
+    ##  5     5              592          10.3 large                  553.    39.2 
+    ##  6     6              576          10.3 large                  553.    23.2 
+    ##  7     7              504          25.6 large                  511.    -6.82
+    ##  8     8              505          15.2 large                  539.   -34.3 
+    ##  9     9              481          23.8 small                  525.   -43.5 
+    ## 10    10              513          25.5 large                  511.     1.91
+    ## # … with 322 more rows
+
+``` r
+get_regression_points(model_2_interaction) %>%
+  summarise(across(c(average_sat_math, average_sat_math_hat, residual),
+            list(var = var)))
+```
+
+    ## # A tibble: 1 × 3
+    ##   average_sat_math_var average_sat_math_hat_var residual_var
+    ##                  <dbl>                    <dbl>        <dbl>
+    ## 1                3691.                    2580.        1111.
+
+``` r
+get_regression_summaries(model_2_interaction)
+```
+
+    ## # A tibble: 1 × 9
+    ##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+    ##       <dbl>         <dbl> <dbl> <dbl> <dbl>     <dbl>   <dbl> <dbl> <dbl>
+    ## 1     0.699         0.694 1107.  33.3  33.6      151.       0     5   332
+
+### 6.3.3
+
 Document the information about the analysis session
 
 ``` r
