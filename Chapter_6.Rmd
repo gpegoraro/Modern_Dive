@@ -3,7 +3,7 @@ title: "Chapter_6"
 output: github_document
 ---
 
-Code for the Chapter 6 of the [Modern Dive book](https://moderndive.com/6-regression.html#regression).
+Code for the Chapter 6 of the [Modern Dive book](https://moderndive.com/6-multiple-regression.html).
 
 ```{r load-packages}
 library(tidyverse)

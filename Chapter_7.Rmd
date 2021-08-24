@@ -3,7 +3,7 @@ title: "Chapter_7"
 output: github_document
 ---
 
-Code for the Chapter 7 of the [Modern Dive book](https://moderndive.com/7-regression.html#regression).
+Code for the Chapter 7 of the [Modern Dive book](https://moderndive.com/7-sampling.html).
 
 ```{r load-packages}
 library(tidyverse)
