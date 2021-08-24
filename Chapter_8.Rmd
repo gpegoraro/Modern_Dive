@@ -23,6 +23,170 @@ vjust = 0.5
 ))
 ```
 
+## 8,.1
+
+### 8.1.1
+
+```{r}
+glimpse(pennies_sample)
+```
+
+```{r}
+pennies_sample %>%
+  ggplot(aes(x = year)) +
+  geom_histogram(binwidth = 10,
+                 color = "white")
+```
+
+```{r}
+x_bar <- pennies_sample %>%
+  summarise(mean_year = mean(year))
+
+x_bar
+```
+
+### 8.1.2
+
+```{r}
+pennies_resample <- tibble(
+  year = c(1976, 1962, 1976, 1983, 2017, 2015, 2015, 1962, 2016, 1976, 
+           2006, 1997, 1988, 2015, 2015, 1988, 2016, 1978, 1979, 1997, 
+           1974, 2013, 1978, 2015, 2008, 1982, 1986, 1979, 1981, 2004, 
+           2000, 1995, 1999, 2006, 1979, 2015, 1979, 1998, 1981, 2015, 
+           2000, 1999, 1988, 2017, 1992, 1997, 1990, 1988, 2006, 2000)
+)
+```
+
+```{r}
+pennies_resample %>%
+  ggplot(aes(x = year)) +
+  geom_histogram(binwidth = 10,
+                 color = "white")
+```
+
+```{r}
+pennies_resample %>%
+  summarise(mean_year = mean(year))
+```
+
+```{r}
+glimpse(pennies_resamples)
+```
+
+```{r}
+resampled_means <- pennies_resamples %>%
+  group_by(name) %>%
+  summarise(mean_year = mean(year))
+
+resampled_means
+```
+
+```{r}
+resampled_means %>%
+  ggplot(aes(x = mean_year)) +
+  geom_histogram(binwidth = 1,
+                 boundary = 1990,
+                 color = "white") +
+  labs(x = "Resampled Mean Year")
+```
+
+## 8.2
+
+### 8.1
+
+```{r}
+set.seed(42)
+
+virtual_resample <- pennies_sample %>%
+  rep_sample_n(size = 50, replace = TRUE)
+
+virtual_resample
+```
+
+```{r}
+virtual_resample %>%
+  summarise(resample_mean = mean(year))
+```
+
+```{r}
+virtual_resamples <- pennies_sample %>%
+  rep_sample_n(size = 50, 
+               replace = TRUE,
+               reps = 35)
+
+virtual_resamples
+```
+
+```{r}
+virtual_resampled_means <- virtual_resamples %>%
+  group_by(replicate) %>%
+  summarise(mean_year = mean(year))
+
+virtual_resampled_means
+```
+
+```{r}
+virtual_resampled_means %>%
+  ggplot(aes(x = mean_year)) +
+  geom_histogram(binwidth = 1,
+                 boundary = 1990,
+                 color = "white") +
+  labs(x = "Virtual Resampled Mean Year")
+```
+
+```{r}
+virtual_resampled_means <- pennies_sample %>%
+  rep_sample_n(size = 50, 
+               replace = TRUE,
+               reps = 1000) %>%
+  group_by(replicate) %>%
+  summarise(mean_year = mean(year))
+
+virtual_resampled_means
+```
+
+```{r}
+virtual_resampled_means %>%
+  ggplot(aes(x = mean_year)) +
+  geom_histogram(binwidth = 1,
+                 boundary = 1990,
+                 color = "white") +
+  labs(x = "Virtual Resampled Mean Year")
+```
+
+```{r}
+virtual_resampled_means %>%
+  summarise(means_of_means = mean(mean_year),
+            sd_of_mean = sd(mean_year)) %>%
+  mutate(CI95_low = means_of_means - 1.96 * sd_of_mean,
+         CI95_high = means_of_means + 1.96 * sd_of_mean)
+```
+
+## 8.3
+
+### 8.3.1
+
+```{r}
+CI95_q <- quantile(virtual_resampled_means$mean_year,c(0.025, 0.975))
+
+CI95_q
+```
+
+```{r}
+virtual_resampled_means %>%
+  ggplot(aes(x = mean_year)) +
+  geom_histogram(binwidth = 1,
+                 boundary = 1990,
+                 color = "white") +
+  geom_vline(xintercept = CI95_q,
+             linetype = "longdash",
+             color = "grey70") +
+  
+  labs(x = "Virtual Resampled Mean Year")
+```
+
+## 8.4
+
 Document the information about the analysis session
 
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}
