@@ -2,7 +2,7 @@ Chapter\_6
 ================
 
 Code for the Chapter 6 of the [Modern Dive
-book](https://moderndive.com/6-regression.html#regression).
+book](https://moderndive.com/6-multiple-regression.html).
 
 ``` r
 library(tidyverse)
@@ -624,7 +624,7 @@ sessionInfo()
     ## [49] compiler_4.1.1       rlang_0.4.11         grid_4.1.1          
     ## [52] rstudioapi_0.13      base64enc_0.1-3      labeling_0.4.2      
     ## [55] rmarkdown_2.10       gtable_0.3.0         DBI_1.1.1           
-    ## [58] R6_2.5.0             lubridate_1.7.10     knitr_1.33          
+    ## [58] R6_2.5.1             lubridate_1.7.10     knitr_1.33          
     ## [61] utf8_1.2.2           stringi_1.7.3        Rcpp_1.0.7          
     ## [64] vctrs_0.3.8          dbplyr_2.1.1         tidyselect_1.1.1    
     ## [67] xfun_0.25

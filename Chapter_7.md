@@ -2,7 +2,7 @@ Chapter\_7
 ================
 
 Code for the Chapter 7 of the [Modern Dive
-book](https://moderndive.com/7-regression.html#regression).
+book](https://moderndive.com/7-sampling.html).
 
 ``` r
 library(tidyverse)
@@ -179,7 +179,7 @@ sessionInfo()
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_1.0.7           lubridate_1.7.10     formula.tools_1.7.1 
     ##  [4] assertthat_0.2.1     digest_0.6.27        utf8_1.2.2          
-    ##  [7] R6_2.5.0             cellranger_1.1.0     backports_1.2.1     
+    ##  [7] R6_2.5.1             cellranger_1.1.0     backports_1.2.1     
     ## [10] reprex_2.0.1         evaluate_0.14        highr_0.9           
     ## [13] httr_1.4.2           pillar_1.6.2         rlang_0.4.11        
     ## [16] readxl_1.3.1         rstudioapi_0.13      rmarkdown_2.10      
