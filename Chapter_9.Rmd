@@ -25,6 +25,152 @@ vjust = 0.5
 ))
 ```
 
+## 9.1
+### 9.1.1
+
+```{r}
+set.seed(42)
+
+promotions %>%
+  sample_n(size = 6) %>%
+  arrange(id)
+```
+
+```{r}
+promotions %>%
+  ggplot(aes(x = gender,
+             fill = decision)) +
+  geom_bar() +
+  scale_fill_tableau() +
+  labs(x = "Gender of name on rèsumè") 
+```
+
+```{r}
+promotions %>%
+  count(gender, decision)
+```
+
+```{r}
+promotions_shuffled %>%
+  ggplot(aes(x = gender,
+             fill = decision)) +
+  geom_bar() +
+  scale_fill_tableau() +
+  labs(x = "Gender of name on rèsumè")
+```
+
+```{r}
+promotions_shuffled %>%
+  count(gender, decision)
+```
+
+## 9.3
+### 9.3.1
+```{r}
+promotions %>%
+  specify(formula = decision ~ gender,
+          success = "promoted")
+```
+
+```{r}
+promotions %>%
+  specify(formula = decision ~ gender,
+          success = "promoted") %>%
+  hypothesize(null = "independence")
+```
+
+```{r}
+promotions_generate <- promotions %>%
+  specify(formula = decision ~ gender,
+          success = "promoted") %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, 
+           type = "permute")
+
+promotions_generate
+```
+
+```{r}
+null_distribution <- promotions %>%
+  specify(formula = decision ~ gender,
+          success = "promoted") %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, 
+           type = "permute") %>%
+  calculate(stat = "diff in props",
+            order = c("male", "female"))
+
+null_distribution
+```
+
+
+```{r}
+obs_diff_prop <- promotions %>%
+  specify(formula = decision ~ gender,
+          success = "promoted") %>%
+  calculate(stat = "diff in props",
+            order = c("male", "female"))
+
+obs_diff_prop
+```
+
+```{r}
+visualize(null_distribution, bins = 10)
+```
+
+```{r}
+visualize(null_distribution, bins = 10) +
+  shade_p_value(obs_stat = obs_diff_prop, direction = "right")
+```
+
+```{r}
+null_distribution %>%
+  get_p_value(obs_stat = obs_diff_prop, 
+              direction = "right")
+```
+### 9.3.2 
+
+```{r}
+bootstrap_distribution <- promotions %>%
+  specify(formula = decision ~ gender,
+          success = "promoted") %>%
+  # Remove hypothesize()
+  #hypothesize(null = "independence") %>%
+  # Change type from "permute" to "bootstrap"
+  generate(reps = 1000, 
+           type = "bootstrap") %>%
+  calculate(stat = "diff in props",
+            order = c("male", "female"))
+
+bootstrap_distribution
+```
+
+```{r}
+percentile_ci <- bootstrap_distribution %>%
+  get_ci(type = "percentile")
+
+percentile_ci
+```
+```{r}
+visualize(bootstrap_distribution) +
+  shade_ci(endpoints = percentile_ci,
+           color = "darkblue",
+           fill = "grey70")
+```
+
+```{r}
+se_ci <- bootstrap_distribution %>%
+  get_ci(type = "se", point_estimate = obs_diff_prop)
+
+se_ci
+```
+
+```{r}
+visualize(bootstrap_distribution) +
+  shade_ci(endpoints = se_ci,
+           color = "darkred",
+           fill = "grey70")
+```
 
 Document the information about the analysis session
 
