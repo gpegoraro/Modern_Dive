@@ -466,8 +466,9 @@ bootstrap_distr
 visualize(bootstrap_distr)
 ```
 
-![](Chapter_8_files/figure-gfm/unnamed-chunk-27-1.png)<!-- --> \#\#\#
-8.4.3
+![](Chapter_8_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+### 8.4.3
 
 ``` r
 percentile_ci <- bootstrap_distr %>%
@@ -488,8 +489,9 @@ visualize(bootstrap_distr) +
                             fill = "gray70")
 ```
 
-![](Chapter_8_files/figure-gfm/unnamed-chunk-29-1.png)<!-- --> \#\#\#
-8.4.4
+![](Chapter_8_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+### 8.4.4
 
 ``` r
 standard_error_ci <- bootstrap_distr %>%
@@ -515,6 +517,183 @@ visualize(bootstrap_distr) +
 ```
 
 ![](Chapter_8_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
+## 8.5
+
+``` r
+bowl %>%
+  summarize(p_red = mean(color == "red"))
+```
+
+    ## # A tibble: 1 × 1
+    ##   p_red
+    ##   <dbl>
+    ## 1 0.375
+
+``` r
+bowl_sample_1
+```
+
+    ## # A tibble: 50 × 1
+    ##    color
+    ##    <chr>
+    ##  1 white
+    ##  2 white
+    ##  3 red  
+    ##  4 red  
+    ##  5 white
+    ##  6 white
+    ##  7 red  
+    ##  8 white
+    ##  9 white
+    ## 10 white
+    ## # … with 40 more rows
+
+``` r
+p_hat <- bowl_sample_1 %>% 
+  summarise(prop = mean(color == "red")) %>%
+  pull(prop)
+
+p_hat
+```
+
+    ## [1] 0.42
+
+``` r
+bowl_sample_1 %>%
+  specify(response = color, success = "red")
+```
+
+    ## Response: color (factor)
+    ## # A tibble: 50 × 1
+    ##    color
+    ##    <fct>
+    ##  1 white
+    ##  2 white
+    ##  3 red  
+    ##  4 red  
+    ##  5 white
+    ##  6 white
+    ##  7 red  
+    ##  8 white
+    ##  9 white
+    ## 10 white
+    ## # … with 40 more rows
+
+``` r
+bowl_sample_1 %>%
+  specify(response = color, success = "red") %>%
+  generate(reps = 1000, type = "bootstrap")
+```
+
+    ## Response: color (factor)
+    ## # A tibble: 50,000 × 2
+    ## # Groups:   replicate [1,000]
+    ##    replicate color
+    ##        <int> <fct>
+    ##  1         1 white
+    ##  2         1 white
+    ##  3         1 white
+    ##  4         1 red  
+    ##  5         1 white
+    ##  6         1 white
+    ##  7         1 white
+    ##  8         1 red  
+    ##  9         1 red  
+    ## 10         1 white
+    ## # … with 49,990 more rows
+
+``` r
+sample_1_bootstrap <- bowl_sample_1 %>%
+  specify(response = color, success = "red") %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "prop")
+```
+
+``` r
+percentile_ci_1 <- sample_1_bootstrap %>%
+  get_ci(level = 0.95, type = "percentile")
+
+percentile_ci_1
+```
+
+    ## # A tibble: 1 × 2
+    ##   lower_ci upper_ci
+    ##      <dbl>    <dbl>
+    ## 1      0.3     0.56
+
+``` r
+sample_1_bootstrap %>%
+  visualize(bins = 15) +
+  shade_ci(endpoints = percentile_ci_1,
+           color = "navyblue",
+           fill = "grey70") +
+  geom_vline(xintercept = p_hat,
+             linetype = "longdash",
+             color = "darkred")
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+
+``` r
+bowl_sample_2 <- bowl %>%
+  rep_sample_n(size = 50)
+
+bowl_sample_2
+```
+
+    ## # A tibble: 50 × 3
+    ## # Groups:   replicate [1]
+    ##    replicate ball_ID color
+    ##        <int>   <int> <chr>
+    ##  1         1    1423 white
+    ##  2         1    1193 white
+    ##  3         1    1283 red  
+    ##  4         1    2186 red  
+    ##  5         1    2095 white
+    ##  6         1     357 red  
+    ##  7         1    1320 white
+    ##  8         1    1084 white
+    ##  9         1    2100 red  
+    ## 10         1     267 white
+    ## # … with 40 more rows
+
+``` r
+sample_2_bootstrap <- bowl_sample_2 %>%
+  specify(response = color, success = "red") %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "prop")
+
+sample_2_bootstrap
+```
+
+    ## Response: color (factor)
+    ## # A tibble: 1,000 × 2
+    ##    replicate  stat
+    ##        <int> <dbl>
+    ##  1         1  0.3 
+    ##  2         2  0.44
+    ##  3         3  0.28
+    ##  4         4  0.4 
+    ##  5         5  0.32
+    ##  6         6  0.26
+    ##  7         7  0.4 
+    ##  8         8  0.42
+    ##  9         9  0.46
+    ## 10        10  0.34
+    ## # … with 990 more rows
+
+``` r
+percentile_ci_2 <- sample_2_bootstrap %>%
+  get_ci(level = 0.95, type = "percentile")
+
+percentile_ci_2
+```
+
+    ## # A tibble: 1 × 2
+    ##   lower_ci upper_ci
+    ##      <dbl>    <dbl>
+    ## 1      0.2     0.46
 
 Document the information about the analysis session
 
