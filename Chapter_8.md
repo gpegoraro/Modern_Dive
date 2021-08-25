@@ -281,19 +281,6 @@ virtual_resampled_means %>%
 
 ![](Chapter_8_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
-``` r
-virtual_resampled_means %>%
-  summarise(means_of_means = mean(mean_year),
-            sd_of_mean = sd(mean_year)) %>%
-  mutate(CI95_low = means_of_means - 1.96 * sd_of_mean,
-         CI95_high = means_of_means + 1.96 * sd_of_mean)
-```
-
-    ## # A tibble: 1 × 4
-    ##   means_of_means sd_of_mean CI95_low CI95_high
-    ##            <dbl>      <dbl>    <dbl>     <dbl>
-    ## 1          1995.       2.18    1991.     2000.
-
 ## 8.3
 
 ### 8.3.1
@@ -320,7 +307,40 @@ virtual_resampled_means %>%
   labs(x = "Virtual Resampled Mean Year")
 ```
 
-![](Chapter_8_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](Chapter_8_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+``` r
+CI95_n <- virtual_resampled_means %>%
+  summarise(means_of_means = mean(mean_year),
+            sd_of_mean = sd(mean_year)) %>%
+  mutate(CI95_low = means_of_means - 1.96 * sd_of_mean,
+         CI95_high = means_of_means + 1.96 * sd_of_mean) %>%
+  select(CI95_low, CI95_high) %>%
+  pivot_longer(cols = c(CI95_low, CI95_high)) %>%
+  pull(value)
+
+CI95_n
+```
+
+    ## [1] 1991.124 1999.651
+
+``` r
+virtual_resampled_means %>%
+  ggplot(aes(x = mean_year)) +
+  geom_histogram(binwidth = 1,
+                 boundary = 1990,
+                 color = "white") +
+  geom_vline(xintercept = CI95_q,
+             linetype = "longdash",
+             color = "grey70") +
+  geom_vline(xintercept = CI95_n,
+             linetype = "longdash",
+             color = "red") +
+  
+  labs(x = "Virtual Resampled Mean Year")
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ## 8.4
 

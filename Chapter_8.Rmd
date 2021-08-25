@@ -154,13 +154,6 @@ virtual_resampled_means %>%
   labs(x = "Virtual Resampled Mean Year")
 ```
 
-```{r}
-virtual_resampled_means %>%
-  summarise(means_of_means = mean(mean_year),
-            sd_of_mean = sd(mean_year)) %>%
-  mutate(CI95_low = means_of_means - 1.96 * sd_of_mean,
-         CI95_high = means_of_means + 1.96 * sd_of_mean)
-```
 
 ## 8.3
 
@@ -181,6 +174,35 @@ virtual_resampled_means %>%
   geom_vline(xintercept = CI95_q,
              linetype = "longdash",
              color = "grey70") +
+  
+  labs(x = "Virtual Resampled Mean Year")
+```
+
+```{r}
+CI95_n <- virtual_resampled_means %>%
+  summarise(means_of_means = mean(mean_year),
+            sd_of_mean = sd(mean_year)) %>%
+  mutate(CI95_low = means_of_means - 1.96 * sd_of_mean,
+         CI95_high = means_of_means + 1.96 * sd_of_mean) %>%
+  select(CI95_low, CI95_high) %>%
+  pivot_longer(cols = c(CI95_low, CI95_high)) %>%
+  pull(value)
+
+CI95_n
+```
+
+```{r}
+virtual_resampled_means %>%
+  ggplot(aes(x = mean_year)) +
+  geom_histogram(binwidth = 1,
+                 boundary = 1990,
+                 color = "white") +
+  geom_vline(xintercept = CI95_q,
+             linetype = "longdash",
+             color = "grey70") +
+  geom_vline(xintercept = CI95_n,
+             linetype = "longdash",
+             color = "red") +
   
   labs(x = "Virtual Resampled Mean Year")
 ```
