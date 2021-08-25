@@ -344,6 +344,178 @@ virtual_resampled_means %>%
 
 ## 8.4
 
+### 8.4.2
+
+``` r
+pennies_sample %>%
+  summarize(stat = mean(year))
+```
+
+    ## # A tibble: 1 × 1
+    ##    stat
+    ##   <dbl>
+    ## 1 1995.
+
+``` r
+pennies_sample %>%
+  specify(response = year) %>%
+  calculate(stat = "mean")
+```
+
+    ## Response: year (numeric)
+    ## # A tibble: 1 × 1
+    ##    stat
+    ##   <dbl>
+    ## 1 1995.
+
+``` r
+pennies_sample %>%
+  specify(response = year)
+```
+
+    ## Response: year (numeric)
+    ## # A tibble: 50 × 1
+    ##     year
+    ##    <dbl>
+    ##  1  2002
+    ##  2  1986
+    ##  3  2017
+    ##  4  1988
+    ##  5  2008
+    ##  6  1983
+    ##  7  2008
+    ##  8  1996
+    ##  9  2004
+    ## 10  2000
+    ## # … with 40 more rows
+
+``` r
+pennies_sample %>%
+  specify(formula = year ~ NULL)
+```
+
+    ## Response: year (numeric)
+    ## # A tibble: 50 × 1
+    ##     year
+    ##    <dbl>
+    ##  1  2002
+    ##  2  1986
+    ##  3  2017
+    ##  4  1988
+    ##  5  2008
+    ##  6  1983
+    ##  7  2008
+    ##  8  1996
+    ##  9  2004
+    ## 10  2000
+    ## # … with 40 more rows
+
+``` r
+pennies_sample %>%
+  specify(formula = year ~ NULL) %>%
+  generate(reps = 1000, type = "bootstrap")
+```
+
+    ## Response: year (numeric)
+    ## # A tibble: 50,000 × 2
+    ## # Groups:   replicate [1,000]
+    ##    replicate  year
+    ##        <int> <dbl>
+    ##  1         1  1978
+    ##  2         1  1995
+    ##  3         1  1992
+    ##  4         1  1979
+    ##  5         1  1986
+    ##  6         1  2013
+    ##  7         1  1992
+    ##  8         1  2015
+    ##  9         1  1976
+    ## 10         1  2017
+    ## # … with 49,990 more rows
+
+``` r
+bootstrap_distr <- pennies_sample %>%
+  specify(formula = year ~ NULL) %>%
+  generate(reps = 1000) %>%
+  calculate(stat = "mean")
+```
+
+    ## Setting `type = "bootstrap"` in `generate()`.
+
+``` r
+bootstrap_distr
+```
+
+    ## Response: year (numeric)
+    ## # A tibble: 1,000 × 2
+    ##    replicate  stat
+    ##        <int> <dbl>
+    ##  1         1 1997.
+    ##  2         2 1997.
+    ##  3         3 1996.
+    ##  4         4 1997.
+    ##  5         5 1993.
+    ##  6         6 1999.
+    ##  7         7 1994.
+    ##  8         8 1997.
+    ##  9         9 1993.
+    ## 10        10 1995.
+    ## # … with 990 more rows
+
+``` r
+visualize(bootstrap_distr)
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-27-1.png)<!-- --> \#\#\#
+8.4.3
+
+``` r
+percentile_ci <- bootstrap_distr %>%
+  get_confidence_interval(level = 0.95, type = "percentile")
+
+percentile_ci
+```
+
+    ## # A tibble: 1 × 2
+    ##   lower_ci upper_ci
+    ##      <dbl>    <dbl>
+    ## 1    1991.    2000.
+
+``` r
+visualize(bootstrap_distr) +
+  shade_confidence_interval(endpoints = percentile_ci,
+                            color = "navyblue",
+                            fill = "gray70")
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-29-1.png)<!-- --> \#\#\#
+8.4.4
+
+``` r
+standard_error_ci <- bootstrap_distr %>%
+  get_confidence_interval(type = "se", point_estimate = x_bar)
+```
+
+    ## Using `level = 0.95` to compute confidence interval.
+
+``` r
+standard_error_ci
+```
+
+    ## # A tibble: 1 × 2
+    ##   lower_ci upper_ci
+    ##      <dbl>    <dbl>
+    ## 1    1991.    2000.
+
+``` r
+visualize(bootstrap_distr) +
+  shade_confidence_interval(endpoints = standard_error_ci,
+                            color = "red",
+                            fill = "gray70")
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
 Document the information about the analysis session
 
 ``` r
