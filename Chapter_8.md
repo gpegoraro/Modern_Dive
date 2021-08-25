@@ -695,6 +695,204 @@ percentile_ci_2
     ##      <dbl>    <dbl>
     ## 1      0.2     0.46
 
+## 8.6
+
+``` r
+mythbusters_yawn
+```
+
+    ## # A tibble: 50 × 3
+    ##     subj group   yawn 
+    ##    <int> <chr>   <chr>
+    ##  1     1 seed    yes  
+    ##  2     2 control yes  
+    ##  3     3 seed    no   
+    ##  4     4 seed    yes  
+    ##  5     5 seed    no   
+    ##  6     6 control no   
+    ##  7     7 seed    yes  
+    ##  8     8 control no   
+    ##  9     9 control no   
+    ## 10    10 seed    no   
+    ## # … with 40 more rows
+
+``` r
+mythbusters_yawn %>%
+  count(group, yawn)
+```
+
+    ## # A tibble: 4 × 3
+    ##   group   yawn      n
+    ##   <chr>   <chr> <int>
+    ## 1 control no       12
+    ## 2 control yes       4
+    ## 3 seed    no       24
+    ## 4 seed    yes      10
+
+``` r
+mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes")
+```
+
+    ## Response: yawn (factor)
+    ## Explanatory: group (factor)
+    ## # A tibble: 50 × 2
+    ##    yawn  group  
+    ##    <fct> <fct>  
+    ##  1 yes   seed   
+    ##  2 yes   control
+    ##  3 no    seed   
+    ##  4 yes   seed   
+    ##  5 no    seed   
+    ##  6 no    control
+    ##  7 yes   seed   
+    ##  8 no    control
+    ##  9 no    control
+    ## 10 no    seed   
+    ## # … with 40 more rows
+
+``` r
+mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  generate(reps = 1000, type = "bootstrap")
+```
+
+    ## Response: yawn (factor)
+    ## Explanatory: group (factor)
+    ## # A tibble: 50,000 × 3
+    ## # Groups:   replicate [1,000]
+    ##    replicate yawn  group  
+    ##        <int> <fct> <fct>  
+    ##  1         1 no    control
+    ##  2         1 yes   seed   
+    ##  3         1 no    seed   
+    ##  4         1 no    seed   
+    ##  5         1 yes   seed   
+    ##  6         1 no    control
+    ##  7         1 yes   seed   
+    ##  8         1 yes   seed   
+    ##  9         1 yes   seed   
+    ## 10         1 no    seed   
+    ## # … with 49,990 more rows
+
+``` r
+mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "diff in props")
+```
+
+    ## Warning: The statistic is based on a difference or ratio; by default, for
+    ## difference-based statistics, the explanatory variable is subtracted in the
+    ## order "control" - "seed", or divided in the order "control" / "seed" for ratio-
+    ## based statistics. To specify this order yourself, supply `order = c("control",
+    ## "seed")` to the calculate() function.
+
+    ## Response: yawn (factor)
+    ## Explanatory: group (factor)
+    ## # A tibble: 1,000 × 2
+    ##    replicate     stat
+    ##        <int>    <dbl>
+    ##  1         1 -0.05   
+    ##  2         2 -0.127  
+    ##  3         3 -0.0921 
+    ##  4         4 -0.0677 
+    ##  5         5 -0.119  
+    ##  6         6  0.0184 
+    ##  7         7 -0.190  
+    ##  8         8 -0.00679
+    ##  9         9 -0.170  
+    ## 10        10  0.0535 
+    ## # … with 990 more rows
+
+``` r
+bootstrap_distr_yawning <- mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "diff in props", order = c("seed", "control"))
+
+bootstrap_distr_yawning
+```
+
+    ## Response: yawn (factor)
+    ## Explanatory: group (factor)
+    ## # A tibble: 1,000 × 2
+    ##    replicate     stat
+    ##        <int>    <dbl>
+    ##  1         1  0.326  
+    ##  2         2  0.00328
+    ##  3         3  0.333  
+    ##  4         4  0.171  
+    ##  5         5  0.215  
+    ##  6         6 -0.0238 
+    ##  7         7  0.166  
+    ##  8         8  0.0354 
+    ##  9         9 -0.0682 
+    ## 10        10  0.0980 
+    ## # … with 990 more rows
+
+``` r
+visualize(bootstrap_distr_yawning) +
+  geom_vline(xintercept = 0)
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+
+``` r
+myth_ci_q <- bootstrap_distr_yawning %>%
+  get_confidence_interval(type = "percentile")
+```
+
+    ## Using `level = 0.95` to compute confidence interval.
+
+``` r
+myth_ci_q
+```
+
+    ## # A tibble: 1 × 2
+    ##   lower_ci upper_ci
+    ##      <dbl>    <dbl>
+    ## 1   -0.215    0.305
+
+``` r
+obs_diff_in_props <- mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  calculate(stat = "diff in props", order = c("seed", "control"))
+
+obs_diff_in_props
+```
+
+    ## Response: yawn (factor)
+    ## Explanatory: group (factor)
+    ## # A tibble: 1 × 1
+    ##     stat
+    ##    <dbl>
+    ## 1 0.0441
+
+``` r
+myth_ci_se <- bootstrap_distr_yawning %>%
+  get_ci(type = "se", point_estimate = obs_diff_in_props)
+
+myth_ci_se
+```
+
+    ## # A tibble: 1 × 2
+    ##   lower_ci upper_ci
+    ##      <dbl>    <dbl>
+    ## 1   -0.215    0.303
+
+``` r
+visualize(bootstrap_distr_yawning) +
+  shade_ci(endpoints = myth_ci_q,
+           color = "darkblue",
+           fill = NULL) +
+  shade_ci(endpoints = myth_ci_se,
+           color = "darkred",
+           fill = NULL)
+```
+
+![](Chapter_8_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+
 Document the information about the analysis session
 
 ``` r

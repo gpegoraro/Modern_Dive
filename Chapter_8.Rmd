@@ -360,6 +360,81 @@ percentile_ci_2 <- sample_2_bootstrap %>%
 percentile_ci_2
 ```
 
+## 8.6
+
+```{r}
+mythbusters_yawn
+```
+
+```{r}
+mythbusters_yawn %>%
+  count(group, yawn)
+```
+
+```{r}
+mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes")
+```
+
+```{r}
+mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  generate(reps = 1000, type = "bootstrap")
+```
+
+```{r}
+mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "diff in props")
+```
+
+```{r}
+bootstrap_distr_yawning <- mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "diff in props", order = c("seed", "control"))
+
+bootstrap_distr_yawning
+```
+
+```{r}
+visualize(bootstrap_distr_yawning) +
+  geom_vline(xintercept = 0)
+```
+
+```{r}
+myth_ci_q <- bootstrap_distr_yawning %>%
+  get_confidence_interval(type = "percentile")
+
+myth_ci_q
+```
+
+```{r}
+obs_diff_in_props <- mythbusters_yawn %>%
+  specify(formula = yawn ~ group, success = "yes") %>%
+  calculate(stat = "diff in props", order = c("seed", "control"))
+
+obs_diff_in_props
+```
+
+```{r}
+myth_ci_se <- bootstrap_distr_yawning %>%
+  get_ci(type = "se", point_estimate = obs_diff_in_props)
+
+myth_ci_se
+```
+
+```{r}
+visualize(bootstrap_distr_yawning) +
+  shade_ci(endpoints = myth_ci_q,
+           color = "darkblue",
+           fill = NULL) +
+  shade_ci(endpoints = myth_ci_se,
+           color = "darkred",
+           fill = NULL)
+```
+
 Document the information about the analysis session
 
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}

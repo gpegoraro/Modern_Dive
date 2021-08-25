@@ -282,6 +282,13 @@
       "Repository": "CRAN",
       "Hash": "d7566c471c7b17e095dd023b9ef155ad"
     },
+    "ggplot2movies": {
+      "Package": "ggplot2movies",
+      "Version": "0.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "df2c648760e7d07c45249c73ad5b95f9"
+    },
     "ggthemes": {
       "Package": "ggthemes",
       "Version": "4.2.4",
@@ -477,6 +484,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "35de1ce639f20b5e10f7f46260730c65"
+    },
+    "nycflights13": {
+      "Package": "nycflights13",
+      "Version": "1.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "61eb941328b49a62d7f9816dfed7d959"
     },
     "openssl": {
       "Package": "openssl",
