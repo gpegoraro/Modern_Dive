@@ -172,6 +172,76 @@ visualize(bootstrap_distribution) +
            fill = "grey70")
 ```
 
+## 9.5
+### 9.5.1
+
+```{r}
+glimpse(movies)
+```
+
+```{r}
+glimpse(movies_sample)
+```
+```{r}
+movies_sample %>%
+  ggplot(aes(x = genre, y = rating)) +
+  geom_boxplot() +
+  geom_jitter(shape = 21) +
+  labs(x = "Genre",
+       y = "IMDB Rating")
+```
+
+```{r}
+movies_sample %>%
+  group_by(genre) %>%
+  summarize(n = n(),
+            rating_mean = mean(rating),
+            rating_sd = sd(rating))
+```
+
+```{r}
+movies_sample %>%
+  specify(formula = rating ~ genre)
+```
+
+```{r}
+movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  hypothesize(null = "independence")
+```
+```{r}
+movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute")
+```
+```{r}
+null_distr_movies <- movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in means", order = c("Action", "Romance"))
+
+null_distr_movies
+```
+```{r}
+obs_diff_means <- movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  calculate(stat = "diff in means", order = c("Action", "Romance"))
+
+obs_diff_means
+```
+
+```{r}
+visualize(null_distr_movies, bins = 10) +
+  shade_p_value(obs_stat = obs_diff_means, direction = "both")
+```
+
+```{r}
+null_distr_movies %>%
+  get_p_value(obs_stat = obs_diff_means, direction = "both")
+```
+
 Document the information about the analysis session
 
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}

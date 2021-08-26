@@ -1,0 +1,57 @@
+---
+title: "Chapter_10"
+output: github_document
+---
+
+Code for the Chapter 10 of the [Modern Dive book](https://moderndive.com/10-inference-for-regression.html).
+
+```{r load-packages}
+library(tidyverse)
+library(infer)
+library(moderndive)
+library(ggthemes)
+```
+
+Set the palette and the running theme for ggplot2.
+
+```{r set-theme-palette}
+theme_set(theme_bw())
+theme_update(axis.text.x = element_text(
+angle = -45,
+hjust = 0,
+vjust = 0.5
+))
+```
+
+## 10.1
+
+### 10.1.1
+
+```{r}
+evals_ch5 <- evals %>%
+  select(ID, score, bty_avg, age) 
+
+glimpse(evals_ch5)
+```
+
+```{r}
+evals_ch5 %>%
+  ggplot(aes(bty_avg, score)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Beauty Score",
+       y = "Teaching Score",
+       title = "Relationship between beauty scores and teaching")
+```
+
+```{r}
+score_model <- lm(score ~ bty_avg, data = evals_ch5)
+
+get_regression_table(score_model)
+```
+
+Document the information about the analysis session
+
+```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}
+sessionInfo()
+```

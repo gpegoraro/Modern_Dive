@@ -338,6 +338,209 @@ visualize(bootstrap_distribution) +
 
 ![](Chapter_9_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
+## 9.5
+
+### 9.5.1
+
+``` r
+glimpse(movies)
+```
+
+    ## Rows: 58,788
+    ## Columns: 24
+    ## $ title       <chr> "$", "$1000 a Touchdown", "$21 a Day Once a Month", "$40,0…
+    ## $ year        <int> 1971, 1939, 1941, 1996, 1975, 2000, 2002, 2002, 1987, 1917…
+    ## $ length      <int> 121, 71, 7, 70, 71, 91, 93, 25, 97, 61, 99, 96, 10, 10, 10…
+    ## $ budget      <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+    ## $ rating      <dbl> 6.4, 6.0, 8.2, 8.2, 3.4, 4.3, 5.3, 6.7, 6.6, 6.0, 5.4, 5.9…
+    ## $ votes       <int> 348, 20, 5, 6, 17, 45, 200, 24, 18, 51, 23, 53, 44, 11, 12…
+    ## $ r1          <dbl> 4.5, 0.0, 0.0, 14.5, 24.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4…
+    ## $ r2          <dbl> 4.5, 14.5, 0.0, 0.0, 4.5, 4.5, 0.0, 4.5, 4.5, 0.0, 0.0, 0.…
+    ## $ r3          <dbl> 4.5, 4.5, 0.0, 0.0, 0.0, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5…
+    ## $ r4          <dbl> 4.5, 24.5, 0.0, 0.0, 14.5, 14.5, 4.5, 4.5, 0.0, 4.5, 14.5,…
+    ## $ r5          <dbl> 14.5, 14.5, 0.0, 0.0, 14.5, 14.5, 24.5, 4.5, 0.0, 4.5, 24.…
+    ## $ r6          <dbl> 24.5, 14.5, 24.5, 0.0, 4.5, 14.5, 24.5, 14.5, 0.0, 44.5, 4…
+    ## $ r7          <dbl> 24.5, 14.5, 0.0, 0.0, 0.0, 4.5, 14.5, 14.5, 34.5, 14.5, 24…
+    ## $ r8          <dbl> 14.5, 4.5, 44.5, 0.0, 0.0, 4.5, 4.5, 14.5, 14.5, 4.5, 4.5,…
+    ## $ r9          <dbl> 4.5, 4.5, 24.5, 34.5, 0.0, 14.5, 4.5, 4.5, 4.5, 4.5, 14.5,…
+    ## $ r10         <dbl> 4.5, 14.5, 24.5, 45.5, 24.5, 14.5, 14.5, 14.5, 24.5, 4.5, …
+    ## $ mpaa        <chr> "", "", "", "", "", "", "R", "", "", "", "", "", "", "", "…
+    ## $ Action      <int> 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0…
+    ## $ Animation   <int> 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1…
+    ## $ Comedy      <int> 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1…
+    ## $ Drama       <int> 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0…
+    ## $ Documentary <int> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0…
+    ## $ Romance     <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+    ## $ Short       <int> 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1…
+
+``` r
+glimpse(movies_sample)
+```
+
+    ## Rows: 68
+    ## Columns: 4
+    ## $ title  <chr> "Underworld", "Love Affair", "Junglee", "Eversmile, New Jersey"…
+    ## $ year   <int> 1985, 1932, 1961, 1989, 1979, 1988, 1991, 1995, 1976, 1979, 198…
+    ## $ rating <dbl> 3.1, 6.3, 6.8, 5.0, 4.0, 4.9, 7.4, 3.5, 7.7, 5.8, 8.9, 3.6, 5.5…
+    ## $ genre  <chr> "Action", "Romance", "Romance", "Romance", "Action", "Romance",…
+
+``` r
+movies_sample %>%
+  ggplot(aes(x = genre, y = rating)) +
+  geom_boxplot() +
+  geom_jitter(shape = 21) +
+  labs(x = "Genre",
+       y = "IMDB Rating")
+```
+
+![](Chapter_9_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+movies_sample %>%
+  group_by(genre) %>%
+  summarize(n = n(),
+            rating_mean = mean(rating),
+            rating_sd = sd(rating))
+```
+
+    ## # A tibble: 2 × 4
+    ##   genre       n rating_mean rating_sd
+    ##   <chr>   <int>       <dbl>     <dbl>
+    ## 1 Action     32        5.28      1.36
+    ## 2 Romance    36        6.32      1.61
+
+``` r
+movies_sample %>%
+  specify(formula = rating ~ genre)
+```
+
+    ## Response: rating (numeric)
+    ## Explanatory: genre (factor)
+    ## # A tibble: 68 × 2
+    ##    rating genre  
+    ##     <dbl> <fct>  
+    ##  1    3.1 Action 
+    ##  2    6.3 Romance
+    ##  3    6.8 Romance
+    ##  4    5   Romance
+    ##  5    4   Action 
+    ##  6    4.9 Romance
+    ##  7    7.4 Romance
+    ##  8    3.5 Action 
+    ##  9    7.7 Romance
+    ## 10    5.8 Romance
+    ## # … with 58 more rows
+
+``` r
+movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  hypothesize(null = "independence")
+```
+
+    ## Response: rating (numeric)
+    ## Explanatory: genre (factor)
+    ## Null Hypothesis: independence
+    ## # A tibble: 68 × 2
+    ##    rating genre  
+    ##     <dbl> <fct>  
+    ##  1    3.1 Action 
+    ##  2    6.3 Romance
+    ##  3    6.8 Romance
+    ##  4    5   Romance
+    ##  5    4   Action 
+    ##  6    4.9 Romance
+    ##  7    7.4 Romance
+    ##  8    3.5 Action 
+    ##  9    7.7 Romance
+    ## 10    5.8 Romance
+    ## # … with 58 more rows
+
+``` r
+movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute")
+```
+
+    ## Response: rating (numeric)
+    ## Explanatory: genre (factor)
+    ## Null Hypothesis: independence
+    ## # A tibble: 68,000 × 3
+    ## # Groups:   replicate [1,000]
+    ##    rating genre   replicate
+    ##     <dbl> <fct>       <int>
+    ##  1    7.1 Action          1
+    ##  2    5.9 Romance         1
+    ##  3    7.4 Romance         1
+    ##  4    5   Romance         1
+    ##  5    7.1 Action          1
+    ##  6    4.5 Romance         1
+    ##  7    8.9 Romance         1
+    ##  8    8.4 Action          1
+    ##  9    5   Romance         1
+    ## 10    7.4 Romance         1
+    ## # … with 67,990 more rows
+
+``` r
+null_distr_movies <- movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in means", order = c("Action", "Romance"))
+
+null_distr_movies
+```
+
+    ## Response: rating (numeric)
+    ## Explanatory: genre (factor)
+    ## Null Hypothesis: independence
+    ## # A tibble: 1,000 × 2
+    ##    replicate    stat
+    ##        <int>   <dbl>
+    ##  1         1  0.198 
+    ##  2         2 -0.262 
+    ##  3         3 -0.0969
+    ##  4         4 -0.180 
+    ##  5         5 -0.156 
+    ##  6         6  0.216 
+    ##  7         7 -0.534 
+    ##  8         8  0.316 
+    ##  9         9  0.387 
+    ## 10        10  1.04  
+    ## # … with 990 more rows
+
+``` r
+obs_diff_means <- movies_sample %>%
+  specify(formula = rating ~ genre) %>%
+  calculate(stat = "diff in means", order = c("Action", "Romance"))
+
+obs_diff_means
+```
+
+    ## Response: rating (numeric)
+    ## Explanatory: genre (factor)
+    ## # A tibble: 1 × 1
+    ##    stat
+    ##   <dbl>
+    ## 1 -1.05
+
+``` r
+visualize(null_distr_movies, bins = 10) +
+  shade_p_value(obs_stat = obs_diff_means, direction = "both")
+```
+
+![](Chapter_9_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+``` r
+null_distr_movies %>%
+  get_p_value(obs_stat = obs_diff_means, direction = "both")
+```
+
+    ## # A tibble: 1 × 1
+    ##   p_value
+    ##     <dbl>
+    ## 1    0.01
+
 Document the information about the analysis session
 
 ``` r
